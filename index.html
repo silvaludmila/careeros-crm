@@ -1,0 +1,3131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CareerOS • CRM de Vagas & Calibrador ATS | Ludmila Silva</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons via CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Google Fonts: Plus Jakarta Sans, Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['"Plus Jakarta Sans"', 'sans-serif'],
+            sans: ['Inter', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            terracotta: {
+              50: '#FDF6F4',
+              100: '#FAEAE5',
+              200: '#F4D1C7',
+              500: '#C96549',
+              600: '#B85337',
+              700: '#9A422A',
+              800: '#7D3623',
+            },
+            olive: {
+              50: '#F7FEE7',
+              100: '#ECFCCB',
+              200: '#D9F99D',
+              600: '#4D7C0F',
+              700: '#3F6212',
+              800: '#365314',
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #F8FAFC;
+      color: #0F172A;
+    }
+
+    h1, h2, h3, h4, .font-heading {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94A3B8;
+    }
+
+    .kanban-card {
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+    }
+    .kanban-card.dragging {
+      opacity: 0.45;
+      transform: scale(0.98);
+    }
+    .kanban-column.drag-over {
+      background-color: #FDF6F4;
+      outline: 1.5px dashed #B85337;
+      outline-offset: -4px;
+    }
+
+    @media print {
+      body * {
+        visibility: hidden !important;
+      }
+      #ats-print-container,
+      #ats-print-container * {
+        visibility: visible !important;
+      }
+      #ats-print-container {
+        position: fixed !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        background: #FFFFFF !important;
+        color: #000000 !important;
+        padding: 20px 28px !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        z-index: 99999 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-terracotta-100 selection:text-terracotta-800">
+
+  <!-- Container Oculto Exclusivo para Exportação PDF ATS Limpo -->
+  <div id="ats-print-container" class="hidden"></div>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-[100] flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- CABEÇALHO EXECUTIVO EDITORIAL -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30">
+    <div class="max-w-[1640px] mx-auto px-4 sm:px-6 py-4">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3.5">
+        <!-- Marca + Perfil Real da Candidata -->
+        <div class="flex items-center gap-3.5">
+          <div class="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center font-heading font-bold text-sm tracking-tight shrink-0">
+            LS
+          </div>
+          <div>
+            <div class="flex items-center gap-2.5 flex-wrap">
+              <h1 class="text-base sm:text-lg font-extrabold text-slate-900 tracking-tight">CareerOS • CRM de Vagas & Calibrador ATS</h1>
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-terracotta-50 text-terracotta-700 border border-terracotta-200">
+                <i data-lucide="shield-check" class="w-3.5 h-3.5 stroke-[1.75]"></i>
+                100% Fatos Reais • Ludmila Silva
+              </span>
+            </div>
+            <p class="text-xs text-slate-500 mt-0.5">
+              Estrategista de Conteúdo • SaaS B2B, SEO & Performance Orgânica • Rio de Janeiro, RJ • Bacharelado em Jornalismo
+            </p>
+          </div>
+        </div>
+
+        <!-- Controles Globais -->
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- Seletor Global Dual de Aderência -->
+          <div class="inline-flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200" title="Alterna o cálculo exibido nos KPIs, Kanban e Tabela">
+            <button id="btn-engine-fit" onclick="setGlobalEngine('fit')" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 bg-slate-900 text-white shadow-2xs">
+              <i data-lucide="target" class="w-3.5 h-3.5 stroke-[1.75]"></i>
+              <span>Fit Geral</span>
+            </button>
+            <button id="btn-engine-gupy" onclick="setGlobalEngine('gupy')" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 text-slate-600 hover:text-slate-900">
+              <i data-lucide="cpu" class="w-3.5 h-3.5 stroke-[1.75]"></i>
+              <span>Match Gupy (Gaia)</span>
+            </button>
+          </div>
+
+          <!-- Status Formação Dinâmico (Gaia 20/20 vs 12/20 pts) -->
+          <button onclick="toggleEducationStatus()" id="btn-edu-status" class="px-3 py-2 rounded-xl text-xs font-medium bg-olive-50 text-olive-800 border border-olive-200 hover:bg-olive-100/70 transition-colors flex items-center gap-1.5" title="Clique para alternar status da graduação (Concluído = 20/20 pts vs Cursando = 12/20 pts no Algoritmo Gaia)">
+            <i data-lucide="graduation-cap" class="w-3.5 h-3.5 stroke-[1.75] text-olive-700"></i>
+            <span id="edu-status-label">Concluído (20/20 pts)</span>
+          </button>
+
+          <!-- Botão Radar & Atualizador -->
+          <button onclick="toggleRadarDrawer()" id="btn-toggle-radar-panel" class="px-3 py-2 rounded-xl text-xs font-medium bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 transition-colors flex items-center gap-1.5">
+            <i data-lucide="radar" class="w-3.5 h-3.5 stroke-[1.75] text-terracotta-600"></i>
+            <span>Radar & Atualizador</span>
+          </button>
+
+          <!-- Botão Nuvem GitHub Gist -->
+          <button onclick="openGistModal()" class="px-3 py-2 rounded-xl text-xs font-medium bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 transition-colors flex items-center gap-1.5">
+            <i data-lucide="cloud" class="w-3.5 h-3.5 stroke-[1.75] text-slate-500"></i>
+            <span>Nuvem</span>
+            <span id="gist-sync-dot" class="w-2 h-2 rounded-full bg-slate-300"></span>
+          </button>
+
+          <!-- Backup JSON / CSV -->
+          <div class="relative inline-block">
+            <button onclick="toggleBackupMenu()" class="px-3 py-2 rounded-xl text-xs font-medium bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 transition-colors flex items-center gap-1.5">
+              <i data-lucide="database" class="w-3.5 h-3.5 stroke-[1.75] text-slate-500"></i>
+              <span>Backup</span>
+              <i data-lucide="chevron-down" class="w-3 h-3 stroke-[1.75] text-slate-400"></i>
+            </button>
+            <div id="backup-dropdown" class="hidden absolute right-0 mt-1.5 w-56 bg-white rounded-xl shadow-lg border border-slate-200 py-1.5 z-50">
+              <button onclick="exportJSON(); toggleBackupMenu()" class="w-full text-left px-3.5 py-2 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2">
+                <i data-lucide="download" class="w-3.5 h-3.5 stroke-[1.75] text-slate-500"></i> Exportar JSON Completo
+              </button>
+              <label class="w-full text-left px-3.5 py-2 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2 cursor-pointer">
+                <i data-lucide="upload" class="w-3.5 h-3.5 stroke-[1.75] text-slate-500"></i> Importar JSON
+                <input type="file" accept=".json" onchange="importJSON(event); toggleBackupMenu()" class="hidden" />
+              </label>
+              <div class="my-1 border-t border-slate-100"></div>
+              <button onclick="exportCSV(); toggleBackupMenu()" class="w-full text-left px-3.5 py-2 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2">
+                <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5 stroke-[1.75] text-olive-700"></i> Exportar CSV (Planilha)
+              </button>
+              <div class="my-1 border-t border-slate-100"></div>
+              <button onclick="resetToCuratedSeeds(); toggleBackupMenu()" class="w-full text-left px-3.5 py-2 text-xs text-terracotta-700 hover:bg-terracotta-50 flex items-center gap-2 font-medium">
+                <i data-lucide="rotate-ccw" class="w-3.5 h-3.5 stroke-[1.75] text-terracotta-600"></i> Restaurar Vagas Efetivas
+              </button>
+            </div>
+          </div>
+
+          <!-- Botão Principal: Nova Vaga (Única Cor Primária Terracota) -->
+          <button onclick="openNewJobModal()" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-terracotta-600 hover:bg-terracotta-700 text-white transition-colors flex items-center gap-1.5 shadow-2xs">
+            <i data-lucide="plus" class="w-3.5 h-3.5 stroke-[2]"></i>
+            <span>Nova Vaga</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 5 KPIs LIMPOS E UNIFORMES -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mt-4">
+        <!-- KPI 1 -->
+        <div class="bg-white border border-slate-200 rounded-xl px-4 py-3 flex items-center justify-between shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
+          <div>
+            <p class="text-[11px] font-medium text-slate-500 uppercase tracking-wider">Vagas Mapeadas</p>
+            <p id="kpi-total" class="text-xl font-bold text-slate-900 mt-0.5 font-mono">0</p>
+          </div>
+          <i data-lucide="briefcase" class="w-4 h-4 stroke-[1.75] text-slate-400"></i>
+        </div>
+
+        <!-- KPI 2 -->
+        <div class="bg-white border border-slate-200 rounded-xl px-4 py-3 flex items-center justify-between shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
+          <div>
+            <p class="text-[11px] font-medium text-slate-500 uppercase tracking-wider">Em Ação / Ativas</p>
+            <p id="kpi-active" class="text-xl font-bold text-terracotta-600 mt-0.5 font-mono">0</p>
+          </div>
+          <span class="w-2 h-2 rounded-full bg-terracotta-600"></span>
+        </div>
+
+        <!-- KPI 3 -->
+        <div class="bg-white border border-slate-200 rounded-xl px-4 py-3 flex items-center justify-between shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
+          <div>
+            <p id="kpi-score-label" class="text-[11px] font-medium text-slate-500 uppercase tracking-wider">Média Fit Geral</p>
+            <p id="kpi-score-value" class="text-xl font-bold text-olive-700 mt-0.5 font-mono">0%</p>
+          </div>
+          <span class="w-2 h-2 rounded-full bg-olive-600"></span>
+        </div>
+
+        <!-- KPI 4 -->
+        <div class="bg-white border border-slate-200 rounded-xl px-4 py-3 flex items-center justify-between shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
+          <div>
+            <p class="text-[11px] font-medium text-slate-500 uppercase tracking-wider">Networking Ativo</p>
+            <p id="kpi-networking" class="text-xl font-bold text-slate-900 mt-0.5 font-mono">0</p>
+          </div>
+          <i data-lucide="users" class="w-4 h-4 stroke-[1.75] text-slate-400"></i>
+        </div>
+
+        <!-- KPI 5 -->
+        <div class="col-span-2 sm:col-span-1 bg-white border border-slate-200 rounded-xl px-4 py-3 flex items-center justify-between shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
+          <div>
+            <p class="text-[11px] font-medium text-slate-500 uppercase tracking-wider">Descartadas / Aprend.</p>
+            <p id="kpi-discarded" class="text-xl font-bold text-slate-600 mt-0.5 font-mono">0</p>
+          </div>
+          <i data-lucide="archive" class="w-4 h-4 stroke-[1.75] text-slate-400"></i>
+        </div>
+      </div>
+
+      <!-- PAINEL RADAR & ATUALIZADOR DE VAGAS (ZERO BANCO DE TALENTOS) -->
+      <div id="radar-updater-panel" class="mt-3.5 bg-white rounded-2xl p-4 border border-slate-200 shadow-[0_1px_3px_rgba(15,23,42,0.03)]">
+        <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+          <!-- Coluna Esquerda: Buscador Rápido por Cargo Efetivo -->
+          <div class="space-y-2.5 flex-1">
+            <div class="flex items-center justify-between gap-2 flex-wrap">
+              <div class="flex items-center gap-2">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-olive-50 text-olive-800 border border-olive-200">
+                  <span class="w-1.5 h-1.5 rounded-full bg-olive-600"></span> Somente Vagas Efetivas
+                </span>
+                <h2 class="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">Radar & Atualizador de Oportunidades</h2>
+              </div>
+              <span class="text-[11px] text-slate-400 font-mono">Exclui Banco de Talentos / Talent Pool</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5 text-[11px]">
+              <!-- Cargo 1 -->
+              <div class="bg-slate-50 border border-slate-200/90 rounded-xl p-2.5">
+                <p class="font-semibold text-slate-800 mb-2 flex items-center justify-between">
+                  <span>1. Analista de SEO Pleno / Sênior</span>
+                  <i data-lucide="search" class="w-3.5 h-3.5 stroke-[1.75] text-slate-400"></i>
+                </p>
+                <div class="flex flex-wrap gap-1.5">
+                  <a href="https://portal.gupy.io/job-search/term=Analista%20de%20SEO" target="_blank" rel="noopener noreferrer" class="px-2 py-1 rounded-lg bg-white hover:border-terracotta-600 hover:text-terracotta-700 text-slate-700 border border-slate-200 font-medium transition-colors">Gupy</a>
+                  <a href="https://www.linkedin.com/jobs/search/?keywords=Analista%20de%20SEO%20NOT%20%22Banco%20de%20Talentos%22&location=Brasil&f_WT=2&f_TPR=r604800" target="_blank" rel="noopener noreferrer" class="px-2 py-1 rounded-lg bg-white hover:border-terracotta-600 hover:text-terracotta-700 text-slate-700 border border-slate-200 font-medium transition-colors">LinkedIn (7d)</a>
+                  <a href="https://br.indeed.com/jobs?q=Analista+de+SEO+-banco+-talentos&l=Remoto&fromage=7" target="_blank" rel="noopener noreferrer" class="px-2 py-1 rounded-lg bg-white hover:border-terracotta-600 hover:text-terracotta-700 text-slate-700 border border-slate-200 font-medium transition-colors">Indeed</a>
+                  <a href="https://www.google.com/search?q=site:gupy.io+%22Analista+de+SEO%22+(Pleno+OR+Senior)+-%22Banco+de+Talentos%22&tbs=qdr:w" target="_blank" rel="noopener noreferrer" class="px-2 py-1 rounded-lg bg-white hover:border-terracotta-600 hover:text-terracotta-700 text-slate-700 border border-slate-200 font-medium transition-colors">X-Ray</a>
+                </div>
+              </div>
+
+              <!-- Cargo 2 -->
+              <div class="bg-slate-50 border border-slate-200/90 rounded-xl p-2.5">
+                <p class="font-semibold text-slate-800 mb-2 flex items-center justify-between">
+                  <span>2. Estrategista de Conteúdo</span>
+                  <i data-lucide="compass" class="w-3.5 h-3.5 stroke-[1.75] text-slate-400"></i>
+                </p>
+                <div class="flex flex-wrap gap-1.5">
+                  <a href="https://portal.gupy.io/job-search/term=Estrategista%20de%20Conte%C3%BAdo" target="_blank" rel="noopener noreferrer" class="px-2 py-1 rounded-lg bg-white hover:border-terracotta-600 hover:text-terracotta-700 text-slate-700 border border-slate-200 font-medium transition-colors">Gupy</a>
+                  <a href="https://www.linkedin.com/jobs/search/?keywords=Estrategista%20de%20Conte%C3%BAdo%20NOT%20%22Banco%20de%20Talentos%22&location=Brasil&f_WT=2&f_TPR=r604800" target="_blank" rel="noopener noreferrer" class="px-2 py-1 rounded-lg bg-white hover:border-terracotta-600 hover:text-terracotta-700 text-slate-700 border border-slate-200 font-medium transition-colors">LinkedIn (7d)</a>
+                  <a href="https://br.indeed.com/jobs?q=Estrategista+de+Conte%C3%BAdo+-banco+-talentos&l=Remoto&fromage=7" target="_blank" rel="noopener noreferrer" class="px-2 py-1 rounded-lg bg-white hover:border-terracotta-600 hover:text-terracotta-700 text-slate-700 border border-slate-200 font-medium transition-colors">Indeed</a>
+                  <a href="https://www.google.com/search?q=site:gupy.io+%22Estrategista+de+Conteudo%22+OR+%22Content+Strategist%22+-%22Banco+de+Talentos%22&tbs=qdr:w" target="_blank" rel="noopener noreferrer" class="px-2 py-1 rounded-lg bg-white hover:border-terracotta-600 hover:text-terracotta-700 text-slate-700 border border-slate-200 font-medium transition-colors">X-Ray</a>
+                </div>
+              </div>
+
+              <!-- Cargo 3 -->
+              <div class="bg-slate-50 border border-slate-200/90 rounded-xl p-2.5">
+                <p class="font-semibold text-slate-800 mb-2 flex items-center justify-between">
+                  <span>3. Analista de Conteúdo Pleno / Sênior</span>
+                  <i data-lucide="file-text" class="w-3.5 h-3.5 stroke-[1.75] text-slate-400"></i>
+                </p>
+                <div class="flex flex-wrap gap-1.5">
+                  <a href="https://portal.gupy.io/job-search/term=Analista%20de%20Conte%C3%BAdo" target="_blank" rel="noopener noreferrer" class="px-2 py-1 rounded-lg bg-white hover:border-terracotta-600 hover:text-terracotta-700 text-slate-700 border border-slate-200 font-medium transition-colors">Gupy</a>
+                  <a href="https://www.linkedin.com/jobs/search/?keywords=Analista%20de%20Conte%C3%BAdo%20NOT%20%22Banco%20de%20Talentos%22&location=Brasil&f_WT=2&f_TPR=r604800" target="_blank" rel="noopener noreferrer" class="px-2 py-1 rounded-lg bg-white hover:border-terracotta-600 hover:text-terracotta-700 text-slate-700 border border-slate-200 font-medium transition-colors">LinkedIn (7d)</a>
+                  <a href="https://br.indeed.com/jobs?q=Analista+de+Conte%C3%BAdo+Pleno+OR+S%C3%AAnior+-banco+-talentos&l=Remoto&fromage=7" target="_blank" rel="noopener noreferrer" class="px-2 py-1 rounded-lg bg-white hover:border-terracotta-600 hover:text-terracotta-700 text-slate-700 border border-slate-200 font-medium transition-colors">Indeed</a>
+                  <a href="https://www.google.com/search?q=site:gupy.io+%22Analista+de+Conteudo%22+(Pleno+OR+Senior)+-%22Banco+de+Talentos%22&tbs=qdr:w" target="_blank" rel="noopener noreferrer" class="px-2 py-1 rounded-lg bg-white hover:border-terracotta-600 hover:text-terracotta-700 text-slate-700 border border-slate-200 font-medium transition-colors">X-Ray</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Coluna Direita: Campo de Importação & Atualização Rápida -->
+          <div class="xl:w-[530px] bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs">
+            <div class="flex items-center justify-between mb-2">
+              <span class="font-semibold text-slate-800 flex items-center gap-1.5">
+                <i data-lucide="plus-circle" class="w-3.5 h-3.5 stroke-[1.75] text-terracotta-600"></i>
+                Importar Vaga Efetiva
+              </span>
+              <span class="text-[10px] text-slate-400 font-mono">Bloqueio automático de Talent Pool</span>
+            </div>
+
+            <form onsubmit="handleQuickRadarImport(event)" class="space-y-2">
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                <input id="qr-company" type="text" required placeholder="Empresa *" class="px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-terracotta-600" />
+                <input id="qr-title" type="text" required placeholder="Cargo *" class="px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-terracotta-600" />
+                <select id="qr-platform" class="px-2 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 focus:outline-none focus:border-terracotta-600">
+                  <option value="Gupy">ATS: Gupy</option>
+                  <option value="LinkedIn">ATS: LinkedIn</option>
+                  <option value="Inhire">ATS: Inhire</option>
+                  <option value="Outro">ATS: Outro</option>
+                </select>
+                <select id="qr-model" class="px-2 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 focus:outline-none focus:border-terracotta-600">
+                  <option value="Remoto">Remoto (Prioridade)</option>
+                  <option value="Híbrido (RJ)">Híbrido (RJ - Prioridade)</option>
+                  <option value="Presencial (RJ)">Presencial (RJ)</option>
+                  <option value="Híbrido SP (máx. 2x/15d)">Híbrido SP (máx. 2x/15d)</option>
+                  <option value="Híbrido (SP/Outro - >2x)">Híbrido SP (>2x / Fora)</option>
+                </select>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-12 gap-1.5">
+                <input id="qr-url" type="url" placeholder="Link oficial (https://...)" class="sm:col-span-4 px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-terracotta-600" />
+                <input id="qr-description" type="text" required placeholder="Cole os requisitos da vaga para análise PLN..." class="sm:col-span-5 px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-terracotta-600" />
+                <button type="submit" class="sm:col-span-3 px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-terracotta-600 text-white font-semibold transition-colors flex items-center justify-center gap-1 whitespace-nowrap">
+                  <span>Analisar</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- BARRA DE NAVEGAÇÃO DE ABAS + FILTRO RÁPIDO -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 mt-4 pt-3 border-t border-slate-100">
+        <nav class="flex items-center gap-1.5 overflow-x-auto">
+          <button id="tab-btn-kanban" onclick="switchMainTab('kanban')" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-terracotta-600 text-white transition-colors flex items-center gap-1.5 whitespace-nowrap">
+            <i data-lucide="kanban" class="w-3.5 h-3.5 stroke-[1.75]"></i>
+            <span>Quadro Kanban (7 Etapas)</span>
+          </button>
+          <button id="tab-btn-table" onclick="switchMainTab('table')" class="px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-100 transition-colors flex items-center gap-1.5 whitespace-nowrap">
+            <i data-lucide="table-2" class="w-3.5 h-3.5 stroke-[1.75]"></i>
+            <span>Tabela Detalhada</span>
+          </button>
+          <button id="tab-btn-radar" onclick="switchMainTab('radar')" class="px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-100 transition-colors flex items-center gap-1.5 whitespace-nowrap">
+            <i data-lucide="compass" class="w-3.5 h-3.5 stroke-[1.75]"></i>
+            <span>Retroalimentação do Radar</span>
+          </button>
+        </nav>
+
+        <div class="flex items-center gap-2">
+          <div class="relative flex-1 sm:w-56">
+            <i data-lucide="search" class="w-3.5 h-3.5 stroke-[1.75] text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+            <input id="global-search" type="text" oninput="renderAll()" placeholder="Filtrar empresa, cargo..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-terracotta-600 focus:bg-white" />
+          </div>
+          <select id="model-filter" onchange="renderAll()" class="px-2.5 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-700 focus:outline-none">
+            <option value="all">Todos Modelos</option>
+            <option value="priority">Prioritárias (Remoto / RJ)</option>
+            <option value="sp-flex">Híbrido SP (máx. 2x/15d)</option>
+            <option value="outside">Fora do Critério</option>
+          </select>
+          <select id="platform-filter" onchange="renderAll()" class="px-2.5 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-700 focus:outline-none">
+            <option value="all">Todas Plataformas</option>
+            <option value="Gupy">Gupy</option>
+            <option value="LinkedIn">LinkedIn</option>
+            <option value="Inhire">Inhire</option>
+            <option value="Outro">Outro</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTEÚDO PRINCIPAL -->
+  <main class="flex-1 max-w-[1640px] w-full mx-auto px-4 sm:px-6 py-5">
+
+    <!-- ABA 1: QUADRO KANBAN DE 7 ETAPAS -->
+    <section id="view-kanban" class="block">
+      <div id="kanban-board" class="flex gap-3.5 overflow-x-auto pb-4 items-start min-h-[calc(100vh-340px)]">
+        <!-- Colunas renderizadas dinamicamente via JS -->
+      </div>
+    </section>
+
+    <!-- ABA 2: TABELA DETALHADA -->
+    <section id="view-table" class="hidden">
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-[0_1px_2px_rgba(15,23,42,0.03)] overflow-hidden">
+        <div class="px-4 py-3 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2 bg-slate-50/60">
+          <h2 class="text-sm font-bold text-slate-900">Visão Analítica & Comparativa de Oportunidades</h2>
+          <div class="flex items-center gap-2">
+            <label class="text-xs text-slate-500">Ordenar por:</label>
+            <select id="table-sort" onchange="renderTable()" class="text-xs bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-700 font-medium">
+              <option value="activeScore">Aderência (Motor Ativo)</option>
+              <option value="gupyScore">Match Gupy (Gaia pts)</option>
+              <option value="fitScore">Fit Geral (%)</option>
+              <option value="updatedAt">Mais Recentes / Verificadas</option>
+            </select>
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="border-b border-slate-200 text-[11px] font-semibold uppercase tracking-wider text-slate-500 bg-slate-50">
+                <th class="py-3 px-4">Vaga & Empresa</th>
+                <th class="py-3 px-3">Etapa</th>
+                <th class="py-3 px-3">Plataforma / Modelo</th>
+                <th class="py-3 px-3">Última Verificação</th>
+                <th class="py-3 px-3">Fit Geral</th>
+                <th class="py-3 px-3">Match Gupy</th>
+                <th class="py-3 px-3">Networking</th>
+                <th class="py-3 px-4 text-right">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="table-body" class="divide-y divide-slate-100 text-xs">
+              <!-- Linhas renderizadas via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABA 3: RETROALIMENTAÇÃO DO RADAR -->
+    <section id="view-radar" class="hidden space-y-5">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <!-- Card 1: Diagnóstico Médio dos 5 Pilares Gaia -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-bold text-slate-900">Diagnóstico Médio • Algoritmo Gaia</h3>
+            <span class="text-[11px] px-2 py-0.5 rounded-full bg-terracotta-50 text-terracotta-700 border border-terracotta-200 font-mono font-semibold">100 pts</span>
+          </div>
+          <p class="text-xs text-slate-500 mb-4">Desempenho médio do perfil real de Ludmila nas vagas mapeadas segundo os 5 pesos da Gupy.</p>
+          <div id="radar-gaia-pillars" class="space-y-3.5">
+            <!-- Preenchido via JS -->
+          </div>
+        </div>
+
+        <!-- Card 2: Palavras-Chave Mais Pedidas vs. Perfil Real -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-bold text-slate-900">Radar de Keywords & Lacunas ATS</h3>
+            <span class="text-[11px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 font-medium">PLN Semântico</span>
+          </div>
+          <p class="text-xs text-slate-500 mb-4">Termos recorrentes nas descrições salvas e se constam nos fatos reais do PDF.</p>
+          <div id="radar-keywords-list" class="space-y-2 max-h-[340px] overflow-y-auto pr-1">
+            <!-- Preenchido via JS -->
+          </div>
+        </div>
+
+        <!-- Card 3: Aprendizados de Vagas Descartadas / Declinadas -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-[0_1px_2px_rgba(15,23,42,0.03)] flex flex-col">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-bold text-slate-900">Aprendizados & Motivos de Descarte</h3>
+            <span class="text-[11px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 font-medium">Calibragem</span>
+          </div>
+          <p class="text-xs text-slate-500 mb-4">Registro de vagas declinadas ou expiradas para refinar o filtro de busca ativa.</p>
+          <div id="radar-discard-list" class="space-y-2.5 flex-1 overflow-y-auto pr-1">
+            <!-- Preenchido via JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Resumo Imutável do Perfil Base Carregado -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
+          <div>
+            <h3 class="text-sm font-bold text-slate-900">Base Factual Imutável do Currículo (Fonte Única da Verdade)</h3>
+            <p class="text-xs text-slate-500">Todos os blocos ATS, reordenações e cartas utilizam exclusivamente os dados reais abaixo.</p>
+          </div>
+          <span class="text-[11px] font-medium text-olive-800 bg-olive-50 border border-olive-200 px-2.5 py-1 rounded-lg">Zero Alucinação • 100% Verificado</span>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4 text-xs">
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
+            <p class="font-bold text-slate-900">Pluga (2022 - Presente)</p>
+            <p class="text-slate-600 mt-1 leading-relaxed">Operação de conteúdo e performance orgânica SaaS B2B, calendário editorial, SEO on-page e técnico, sincronia orgânico/pago (Ads) e métricas 360°.</p>
+          </div>
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
+            <p class="font-bold text-slate-900">Agência Papoca (2021 - 2022)</p>
+            <p class="text-slate-600 mt-1 leading-relaxed">Conteúdo estratégico e SEO para grandes contas B2B (Zendesk e Xpeed), autoridade digital, reputação de marca e educação do mercado.</p>
+          </div>
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
+            <p class="font-bold text-slate-900">CAMTRA (2021)</p>
+            <p class="text-slate-600 mt-1 leading-relaxed">Presença institucional e social media, fluxos de comunicação e conteúdo para públicos estratégicos e grupos internos.</p>
+          </div>
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
+            <p class="font-bold text-slate-900">ANF - Ag. Notícias das Favelas (2020 - 2021)</p>
+            <p class="text-slate-600 mt-1 leading-relaxed">Editora: gestão direta de pautas, revisão de textos de colaboradores/colunistas e curadoria editorial para o portal.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL 1: NOVA VAGA -->
+  <div id="new-job-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-[2px] flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-2xl w-full border border-slate-200 shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div>
+          <h2 class="text-base font-bold text-slate-900">Mapear Nova Oportunidade Efetiva</h2>
+          <p class="text-xs text-slate-500">Cole a descrição da vaga para calcular o Fit Geral e o Match Gupy (Gaia).</p>
+        </div>
+        <button onclick="closeNewJobModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200/60">
+          <i data-lucide="x" class="w-4 h-4 stroke-[1.75]"></i>
+        </button>
+      </div>
+
+      <form id="new-job-form" onsubmit="handleCreateJob(event)" class="p-5 overflow-y-auto space-y-4 text-xs">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Empresa *</label>
+            <input id="nj-company" type="text" required placeholder="Ex: Compass UOL, Gear SEO..." class="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:border-terracotta-600" />
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Título da Vaga *</label>
+            <input id="nj-title" type="text" required placeholder="Ex: Analista de SEO Pleno / Estrategista de Conteúdo" class="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:border-terracotta-600" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Plataforma ATS</label>
+            <select id="nj-platform" class="w-full px-3 py-2 border border-slate-300 rounded-xl bg-white focus:outline-none focus:border-terracotta-600">
+              <option value="Gupy">Gupy</option>
+              <option value="LinkedIn">LinkedIn</option>
+              <option value="Inhire">Inhire</option>
+              <option value="Outro">Outro</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Modelo de Trabalho</label>
+            <select id="nj-model" class="w-full px-3 py-2 border border-slate-300 rounded-xl bg-white focus:outline-none focus:border-terracotta-600">
+              <option value="Remoto">Remoto (Prioridade)</option>
+              <option value="Híbrido (RJ)">Híbrido (RJ - Prioridade)</option>
+              <option value="Presencial (RJ)">Presencial (RJ)</option>
+              <option value="Híbrido SP (máx. 2x/15d)">Híbrido SP (máx. 2x/15d)</option>
+              <option value="Híbrido (SP/Outro - >2x)">Híbrido SP (&gt;2x / Fora)</option>
+              <option value="Presencial (Outro)">Presencial (Outro)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Etapa Inicial</label>
+            <select id="nj-stage" class="w-full px-3 py-2 border border-slate-300 rounded-xl bg-white focus:outline-none focus:border-terracotta-600">
+              <option value="Mapeada">Mapeada</option>
+              <option value="Abordagem / Networking">Abordagem / Networking</option>
+              <option value="Inscrição">Inscrição</option>
+              <option value="Inscrito">Inscrito</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Link da Vaga</label>
+            <input id="nj-url" type="url" placeholder="https://empresa.gupy.io/jobs/..." class="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:border-terracotta-600" />
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Localidade / Publicação</label>
+            <input id="nj-location" type="text" placeholder="Ex: Remoto (Brasil)" class="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:border-terracotta-600" />
+          </div>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="font-semibold text-slate-700">Descrição Completa da Vaga & Requisitos *</label>
+            <span class="text-[11px] text-slate-400">Bloqueia automaticamente Banco de Talentos</span>
+          </div>
+          <textarea id="nj-description" rows="6" required placeholder="Cole aqui as responsabilidades, requisitos e diferenciais da vaga..." class="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:border-terracotta-600 leading-relaxed"></textarea>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+          <button type="button" onclick="closeNewJobModal()" class="px-4 py-2 rounded-xl font-medium text-slate-600 hover:bg-slate-100">Cancelar</button>
+          <button type="submit" class="px-4 py-2 rounded-xl font-semibold bg-terracotta-600 hover:bg-terracotta-700 text-white">Salvar & Calibrar ATS</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 2: MODAL EXECUTIVO DA VAGA -->
+  <div id="job-detail-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-[2px] flex items-center justify-center p-2 sm:p-4">
+    <div class="bg-white rounded-2xl max-w-5xl w-full border border-slate-200 shadow-2xl overflow-hidden flex flex-col h-[92vh]">
+      <!-- Cabeçalho do Modal da Vaga -->
+      <div class="px-5 py-3.5 border-b border-slate-200 bg-slate-50/70 flex flex-col sm:flex-row sm:items-center justify-between gap-2 shrink-0">
+        <div class="min-w-0">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span id="md-platform-badge" class="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-slate-900 text-white">Gupy</span>
+            <h2 id="md-title" class="text-base sm:text-lg font-bold text-slate-900 truncate">Título da Vaga</h2>
+            <span class="text-slate-300">•</span>
+            <span id="md-company" class="text-sm font-bold text-terracotta-600">Empresa</span>
+          </div>
+          <div class="flex items-center gap-3 mt-1 text-xs text-slate-500 flex-wrap">
+            <span id="md-model-loc">Remoto • Brasil</span>
+            <span>|</span>
+            <span id="md-scores-summary" class="font-semibold text-slate-800 font-mono">Fit: 90% • Gaia: 92/100</span>
+            <span>|</span>
+            <span id="md-verified-stamp" class="text-olive-700 font-medium">Verificada em 13/11/2026</span>
+            <a id="md-external-link" href="#" target="_blank" rel="noopener noreferrer" class="text-terracotta-700 hover:underline inline-flex items-center gap-1 font-semibold">
+              Abrir vaga <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 stroke-[1.75]"></i>
+            </a>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 shrink-0">
+          <select id="md-stage-select" onchange="updateCurrentJobStage(this.value)" class="px-2.5 py-1.5 text-xs font-semibold bg-white border border-slate-300 rounded-xl text-slate-800">
+            <!-- Opções preenchidas via JS -->
+          </select>
+          <button onclick="deleteCurrentJob()" title="Excluir vaga" class="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors">
+            <i data-lucide="trash-2" class="w-4 h-4 stroke-[1.75]"></i>
+          </button>
+          <button onclick="closeJobDetailModal()" class="p-2 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-200/70 transition-colors">
+            <i data-lucide="x" class="w-4 h-4 stroke-[1.75]"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Barra de Verificação de Vigência -->
+      <div class="px-5 py-2 bg-slate-50 border-b border-slate-200/80 flex flex-wrap items-center justify-between gap-2 text-xs shrink-0">
+        <div class="flex items-center gap-2 text-slate-700">
+          <i data-lucide="refresh-cw" class="w-3.5 h-3.5 stroke-[1.75] text-terracotta-600"></i>
+          <span class="font-semibold">Controle de Vigência:</span>
+          <span id="md-published-info" class="text-slate-500">Publicada em Nov/2026</span>
+        </div>
+        <div class="flex flex-wrap items-center gap-1.5">
+          <a id="md-verify-url-btn" href="#" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 font-medium transition-colors">
+            1. Conferir Link Oficial
+          </a>
+          <button type="button" onclick="markJobVerifiedToday()" class="px-2.5 py-1 rounded-lg bg-olive-700 hover:bg-olive-800 text-white font-medium transition-colors">
+            2. Marcar Verificada Hoje
+          </button>
+          <button type="button" onclick="markJobExpiredAndDiscard()" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-900 text-white font-medium transition-colors">
+            3. Vaga Expirada → Descartar
+          </button>
+        </div>
+      </div>
+
+      <!-- 4 Abas Internas do Modal -->
+      <div class="px-5 pt-2.5 border-b border-slate-200 bg-white flex items-center gap-2 overflow-x-auto shrink-0">
+        <button id="dtab-btn-details" onclick="switchDetailTab('details')" class="px-3.5 py-2 rounded-t-xl text-xs font-semibold border-b-2 border-terracotta-600 text-terracotta-700 bg-terracotta-50/40 whitespace-nowrap flex items-center gap-1.5">
+          <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5 stroke-[1.75]"></i>
+          <span>Dados & Calibrador ATS</span>
+        </button>
+        <button id="dtab-btn-resume" onclick="switchDetailTab('resume')" class="px-3.5 py-2 rounded-t-xl text-xs font-medium border-b-2 border-transparent text-slate-600 hover:text-slate-900 whitespace-nowrap flex items-center gap-1.5">
+          <i data-lucide="file-text" class="w-3.5 h-3.5 stroke-[1.75]"></i>
+          <span>Currículo ATS (Gupy / CV / Carta)</span>
+        </button>
+        <button id="dtab-btn-networking" onclick="switchDetailTab('networking')" class="px-3.5 py-2 rounded-t-xl text-xs font-medium border-b-2 border-transparent text-slate-600 hover:text-slate-900 whitespace-nowrap flex items-center gap-1.5">
+          <i data-lucide="users" class="w-3.5 h-3.5 stroke-[1.75]"></i>
+          <span>Networking & Mini-CRM</span>
+        </button>
+        <button id="dtab-btn-journal" onclick="switchDetailTab('journal')" class="px-3.5 py-2 rounded-t-xl text-xs font-medium border-b-2 border-transparent text-slate-600 hover:text-slate-900 whitespace-nowrap flex items-center gap-1.5">
+          <i data-lucide="notebook-pen" class="w-3.5 h-3.5 stroke-[1.75]"></i>
+          <span>Diário & Entrevistas</span>
+        </button>
+      </div>
+
+      <!-- Corpo Rolável do Modal da Vaga -->
+      <div class="flex-1 overflow-y-auto p-5 bg-[#F8FAFC]">
+
+        <!-- SUB-VIEW 1: DADOS & CALIBRADOR ATS -->
+        <div id="dtab-details" class="space-y-5">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+            <!-- Coluna Esquerda: Edição dos Dados da Vaga -->
+            <div class="lg:col-span-7 bg-white p-4 rounded-2xl border border-slate-200 space-y-3.5 text-xs">
+              <div class="flex items-center justify-between">
+                <h3 class="font-bold text-slate-900 text-sm">Informações & Atualização da Vaga</h3>
+                <button onclick="saveJobEdits()" class="px-3.5 py-1.5 rounded-lg bg-terracotta-600 hover:bg-terracotta-700 text-white font-semibold transition-colors">
+                  Salvar & Recalcular
+                </button>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block font-semibold text-slate-600 mb-1">Empresa</label>
+                  <input id="ed-company" type="text" class="w-full px-3 py-1.5 border border-slate-200 rounded-lg focus:outline-none focus:border-terracotta-600" />
+                </div>
+                <div>
+                  <label class="block font-semibold text-slate-600 mb-1">Cargo / Título</label>
+                  <input id="ed-title" type="text" class="w-full px-3 py-1.5 border border-slate-200 rounded-lg focus:outline-none focus:border-terracotta-600" />
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label class="block font-semibold text-slate-600 mb-1">Plataforma</label>
+                  <select id="ed-platform" class="w-full px-3 py-1.5 border border-slate-200 rounded-lg bg-white">
+                    <option value="Gupy">Gupy</option>
+                    <option value="LinkedIn">LinkedIn</option>
+                    <option value="Inhire">Inhire</option>
+                    <option value="Outro">Outro</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block font-semibold text-slate-600 mb-1">Modelo</label>
+                  <select id="ed-model" class="w-full px-3 py-1.5 border border-slate-200 rounded-lg bg-white">
+                    <option value="Remoto">Remoto (Prioridade)</option>
+                    <option value="Híbrido (RJ)">Híbrido (RJ - Prioridade)</option>
+                    <option value="Presencial (RJ)">Presencial (RJ)</option>
+                    <option value="Híbrido SP (máx. 2x/15d)">Híbrido SP (máx. 2x/15d)</option>
+                    <option value="Híbrido (SP/Outro - >2x)">Híbrido SP (&gt;2x / Fora)</option>
+                    <option value="Presencial (Outro)">Presencial (Outro)</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block font-semibold text-slate-600 mb-1">Localidade / Publicação</label>
+                  <input id="ed-location" type="text" class="w-full px-3 py-1.5 border border-slate-200 rounded-lg" />
+                </div>
+              </div>
+
+              <div>
+                <label class="block font-semibold text-slate-600 mb-1">URL Direta da Vaga</label>
+                <input id="ed-url" type="url" class="w-full px-3 py-1.5 border border-slate-200 rounded-lg font-mono text-[11px]" />
+              </div>
+
+              <div>
+                <label class="block font-semibold text-slate-600 mb-1">Motivo de Descarte / Aprendizado (se etapa = Descartada)</label>
+                <input id="ed-discard-reason" type="text" placeholder="Ex: Vaga encerrada no portal, modelo presencial fora do RJ..." class="w-full px-3 py-1.5 border border-slate-200 rounded-lg bg-slate-50" />
+              </div>
+
+              <div>
+                <label class="block font-semibold text-slate-600 mb-1">Descrição Atualizada da Vaga (Recalcula motores ao salvar)</label>
+                <textarea id="ed-description" rows="7" class="w-full px-3 py-2 border border-slate-200 rounded-lg leading-relaxed focus:outline-none focus:border-terracotta-600"></textarea>
+              </div>
+            </div>
+
+            <!-- Coluna Direita: Raio-X Dual (Algoritmo Gaia Gupy vs. Fit Geral) -->
+            <div class="lg:col-span-5 space-y-4">
+              <div class="bg-white p-4 rounded-2xl border border-slate-200">
+                <h3 class="font-bold text-slate-900 text-sm mb-3">Motor Dual de Aderência</h3>
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                  <div class="p-3 rounded-xl bg-terracotta-50/70 border border-terracotta-200">
+                    <span class="text-[11px] font-semibold text-terracotta-800">Match Gupy (Gaia)</span>
+                    <p id="ed-gupy-total" class="text-2xl font-bold text-terracotta-700 mt-0.5 font-mono">0 / 100</p>
+                    <p class="text-[10px] text-terracotta-700/80 mt-0.5">Pesos: 50 / 20 / 15 / 10 / 5</p>
+                  </div>
+                  <div class="p-3 rounded-xl bg-olive-50/70 border border-olive-200">
+                    <span class="text-[11px] font-semibold text-olive-800">Fit Geral Executivo</span>
+                    <p id="ed-fit-total" class="text-2xl font-bold text-olive-700 mt-0.5 font-mono">0%</p>
+                    <p class="text-[10px] text-olive-700/80 mt-0.5">Sinergia B2B, SEO & Modelo</p>
+                  </div>
+                </div>
+
+                <!-- Breakdown dos 5 Pilares Gaia -->
+                <div id="ed-gaia-breakdown" class="space-y-2.5 text-xs">
+                  <!-- Renderizado via JS -->
+                </div>
+              </div>
+
+              <!-- Card Keywords Encontradas vs. Ausentes -->
+              <div class="bg-white p-4 rounded-2xl border border-slate-200 text-xs">
+                <h4 class="font-bold text-slate-900 mb-2">Mapeamento Semântico de Keywords</h4>
+                <div class="mb-3">
+                  <p class="text-[11px] font-semibold text-olive-700 mb-1.5">Presentes no Currículo Real de Ludmila:</p>
+                  <div id="ed-matched-keywords" class="flex flex-wrap gap-1.5"></div>
+                </div>
+                <div>
+                  <p class="text-[11px] font-semibold text-slate-600 mb-1.5">Pedidas na Vaga (Não explicitadas no PDF):</p>
+                  <div id="ed-missing-keywords" class="flex flex-wrap gap-1.5"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUB-VIEW 2: CURRÍCULO ATS (3 SUB-ABAS + EXPORTAR PDF LIMPO) -->
+        <div id="dtab-resume" class="hidden space-y-4">
+          <!-- Banner & Controles do Motor de Adaptação Semântica -->
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 space-y-3">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+              <div class="flex flex-wrap items-center gap-1.5">
+                <button id="rsub-btn-gupy" onclick="switchResumeSubTab('gupy')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 text-white transition-colors">
+                  Blocos para Gupy
+                </button>
+                <button id="rsub-btn-cv" onclick="switchResumeSubTab('cv')" class="px-3 py-1.5 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-100 transition-colors">
+                  CV Completo Calibrado
+                </button>
+                <button id="rsub-btn-cover" onclick="switchResumeSubTab('cover')" class="px-3 py-1.5 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-100 transition-colors">
+                  Carta de Apresentação
+                </button>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-2">
+                <!-- Seletor de Foco Manual / Auto -->
+                <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1">
+                  <span class="text-[11px] font-semibold text-slate-500">Trilha:</span>
+                  <select id="resume-track-override" onchange="updateResumeTrackOverride(this.value)" class="text-xs font-semibold text-slate-800 bg-transparent focus:outline-none">
+                    <option value="auto">Auto (PLN da Vaga)</option>
+                    <option value="seo">Trilha A: SEO Técnico & Performance</option>
+                    <option value="geo">Trilha B: GEO & Busca em IA</option>
+                    <option value="strategy">Trilha C: Estratégia B2B & Funil/MQLs</option>
+                    <option value="multichannel">Trilha D: Multicanal, Editorial & Social</option>
+                  </select>
+                </div>
+
+                <!-- Alternador Texto Corrido vs Bullets -->
+                <div class="inline-flex items-center bg-slate-100 p-0.5 rounded-xl border border-slate-200">
+                  <button id="btn-format-prose" onclick="setGupyFormatMode('prose')" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-white text-slate-900 shadow-2xs transition-all">
+                    Texto Corrido
+                  </button>
+                  <button id="btn-format-bullets" onclick="setGupyFormatMode('bullets')" class="px-2.5 py-1 rounded-lg text-[11px] font-medium text-slate-600 hover:text-slate-900 transition-all">
+                    Bullets
+                  </button>
+                </div>
+
+                <button onclick="exportCleanATSPDF()" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-terracotta-600 hover:bg-terracotta-700 text-white transition-colors flex items-center gap-1.5">
+                  <i data-lucide="printer" class="w-3.5 h-3.5 stroke-[1.75]"></i>
+                  <span>Exportar PDF ATS</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Indicador Visual da Trilha Ativa e Keywords Injetadas -->
+            <div class="pt-3 border-t border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-2.5 text-xs">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-terracotta-50 text-terracotta-800 border border-terracotta-200 font-semibold">
+                  <i data-lucide="sliders" class="w-3.5 h-3.5 stroke-[1.75] text-terracotta-600"></i>
+                  <span id="active-track-badge">Foco: Estratégia B2B & Funil</span>
+                </span>
+                <span id="active-sector-badge" class="text-[11px] text-slate-500 font-mono">Contexto: SaaS B2B</span>
+              </div>
+
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="text-[11px] font-medium text-slate-500">Keywords injetadas:</span>
+                <div id="injected-keywords-pills" class="flex flex-wrap gap-1"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sub-aba 2.1: Blocos para Gupy -->
+          <div id="rsub-gupy" class="space-y-3.5">
+            <div id="gupy-blocks-container" class="space-y-3">
+              <!-- Blocos gerados via JS -->
+            </div>
+          </div>
+
+          <!-- Sub-aba 2.2: CV Completo Calibrado -->
+          <div id="rsub-cv" class="hidden space-y-3">
+            <div class="bg-white p-5 rounded-2xl border border-slate-200">
+              <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-200">
+                <div>
+                  <h3 class="text-sm font-bold text-slate-900">Currículo Estruturado Padrão ATS (Texto Limpo • Coluna Única)</h3>
+                  <p class="text-xs text-slate-500">Título, resumo, experiências e pilares reordenados especificamente para esta vaga.</p>
+                </div>
+                <button onclick="copyFullATSResume()" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 hover:bg-terracotta-600 text-white flex items-center gap-1.5 transition-colors">
+                  <i data-lucide="copy" class="w-3.5 h-3.5 stroke-[1.75]"></i> Copiar CV Completo
+                </button>
+              </div>
+              <div id="full-cv-preview" class="text-xs text-slate-800 space-y-4 leading-relaxed font-sans">
+                <!-- Renderizado via JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Sub-aba 2.3: Carta de Apresentação -->
+          <div id="rsub-cover" class="hidden space-y-3">
+            <div class="bg-white p-5 rounded-2xl border border-slate-200">
+              <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-200">
+                <div>
+                  <h3 class="text-sm font-bold text-slate-900">Carta de Apresentação Executiva Personalizada</h3>
+                  <p class="text-xs text-slate-500">Alinha a trilha predominante da vaga à trajetória real na Pluga, Agência Papoca, CAMTRA e ANF.</p>
+                </div>
+                <button onclick="copyCoverLetter()" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 hover:bg-terracotta-600 text-white flex items-center gap-1.5 transition-colors">
+                  <i data-lucide="copy" class="w-3.5 h-3.5 stroke-[1.75]"></i> Copiar Carta
+                </button>
+              </div>
+              <textarea id="cover-letter-text" rows="13" class="w-full p-3.5 text-xs text-slate-800 bg-slate-50 border border-slate-200 rounded-xl leading-relaxed focus:outline-none focus:bg-white"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUB-VIEW 3: NETWORKING & MINI-CRM (4 PERSONAS ESTRATÉGICAS) -->
+        <div id="dtab-networking" class="hidden space-y-4">
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <h3 class="text-sm font-bold text-slate-900">Mapa Estratégico de Abordagem • 4 Personas Alvo</h3>
+              <p class="text-xs text-slate-500">Use os atalhos de LinkedIn e Google X-Ray para localizar decisores. Ao registrar <strong>"Indicação confirmada"</strong>, o Match Gupy ganha <strong>+5 pts</strong> automaticamente.</p>
+            </div>
+            <span id="net-bonus-badge" class="px-3 py-1 rounded-full text-xs font-semibold bg-terracotta-50 text-terracotta-700 border border-terracotta-200 font-mono self-start sm:self-auto">
+              Networking Gaia: 0 / 5 pts
+            </span>
+          </div>
+
+          <div id="networking-personas-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- 4 Cards de Persona renderizados via JS -->
+          </div>
+        </div>
+
+        <!-- SUB-VIEW 4: DIÁRIO & ENTREVISTAS -->
+        <div id="dtab-journal" class="hidden space-y-4">
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 space-y-3 text-xs">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-sm font-bold text-slate-900">Diário do Processo Seletivo & Roteiro de Entrevista</h3>
+                <p class="text-xs text-slate-500">Registre datas de etapas, feedbacks de recrutadores, cases técnicos e perguntas para o gestor.</p>
+              </div>
+              <button onclick="saveJobNotes()" class="px-3.5 py-1.5 rounded-xl bg-terracotta-600 hover:bg-terracotta-700 text-white font-semibold transition-colors">
+                Salvar Anotações
+              </button>
+            </div>
+            <textarea id="ed-notes" rows="12" placeholder="Registre aqui datas de etapas, feedbacks e pontos de atenção para a entrevista..." class="w-full p-3.5 border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none leading-relaxed"></textarea>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: SINCRONIZAÇÃO EM NUVEM (GITHUB GIST) -->
+  <div id="gist-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-[2px] flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full border border-slate-200 shadow-2xl overflow-hidden">
+      <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div class="flex items-center gap-2.5">
+          <i data-lucide="cloud" class="w-4 h-4 stroke-[1.75] text-terracotta-600"></i>
+          <div>
+            <h2 class="text-sm font-bold text-slate-900">Sincronização Gratuita em Nuvem (GitHub Gist)</h2>
+            <p class="text-[11px] text-slate-500">Sincronize seu CRM entre computador e celular sem servidor pago.</p>
+          </div>
+        </div>
+        <button onclick="closeGistModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700">
+          <i data-lucide="x" class="w-4 h-4 stroke-[1.75]"></i>
+        </button>
+      </div>
+
+      <div class="p-5 space-y-4 text-xs">
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-600 space-y-1">
+          <p class="font-semibold text-slate-800">Como configurar em 30 segundos:</p>
+          <p>1. Acesse <strong>github.com/settings/tokens</strong> e gere um <em>Personal Access Token (classic)</em> marcando apenas a permissão <strong>gist</strong>.</p>
+          <p>2. Cole o token abaixo e clique em <strong>Enviar para Nuvem (Push)</strong>. Um Gist privado será criado automaticamente.</p>
+          <p>3. No celular, cole o mesmo Token e o <strong>Gist ID</strong> gerado, e clique em <strong>Baixar da Nuvem (Pull)</strong>.</p>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">GitHub Personal Access Token (escopo: gist)</label>
+          <input id="gist-token" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" class="w-full px-3 py-2 border border-slate-300 rounded-xl font-mono focus:outline-none focus:border-terracotta-600" />
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Gist ID (deixe vazio na primeira vez para criar automaticamente)</label>
+          <div class="flex gap-2">
+            <input id="gist-id" type="text" placeholder="Ex: a1b2c3d4e5f6g7h8i9j0..." class="flex-1 px-3 py-2 border border-slate-300 rounded-xl font-mono focus:outline-none focus:border-terracotta-600" />
+            <button type="button" onclick="copyTextToClipboard(document.getElementById('gist-id').value, 'Gist ID copiado!')" class="px-3 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 font-medium">
+              Copiar ID
+            </button>
+          </div>
+        </div>
+
+        <div id="gist-last-sync" class="text-[11px] text-slate-500">
+          Última sincronização: Nunca sincronizado nesta sessão.
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-slate-100">
+          <button type="button" onclick="saveGistConfig()" class="px-3 py-2 rounded-xl border border-slate-300 text-slate-700 font-semibold hover:bg-slate-50">
+            Salvar Credenciais
+          </button>
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="pullFromGist()" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold flex items-center gap-1.5">
+              <i data-lucide="arrow-down-to-line" class="w-3.5 h-3.5 stroke-[1.75]"></i>
+              <span>Baixar (Pull)</span>
+            </button>
+            <button type="button" onclick="pushToGist()" class="px-3.5 py-2 rounded-xl bg-terracotta-600 hover:bg-terracotta-700 text-white font-semibold flex items-center gap-1.5">
+              <i data-lucide="arrow-up-from-line" class="w-3.5 h-3.5 stroke-[1.75]"></i>
+              <span>Enviar (Push)</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // 1. BASE FACTUAL IMUTÁVEL DA CANDIDATA & CONSTANTES DO FUNIL
+    // =========================================================================
+    const CANDIDATE_PROFILE = {
+      name: "Ludmila Silva",
+      location: "Rio de Janeiro, RJ",
+      phone: "(21) 9 6666-9824",
+      email: "ludmila.silva45@gmail.com",
+      linkedin: "https://www.linkedin.com/in/ludmila-silva-mkt/",
+      education: {
+        degree: "Bacharelado em Jornalismo"
+      },
+      plugaFrentes: [
+        {
+          id: "pluga-saas",
+          keywords: ["saas", "b2b", "estrategia", "estratégia", "conteudo", "conteúdo", "calendario", "calendário", "planejamento"],
+          bullet: "Gerenciamento da operação de conteúdo e performance orgânica da Pluga (SaaS B2B), coordenando todo o ciclo de produção e planejamento macro do calendário editorial.",
+          prose: "gerencio a operação de conteúdo e performance orgânica da Pluga (SaaS B2B), coordenando todo o ciclo de produção desde o planejamento macro do calendário editorial"
+        },
+        {
+          id: "pluga-seo",
+          keywords: ["seo", "on-page", "tecnico", "técnico", "autoridade", "dominio", "domínio", "organica", "orgânica", "trafego", "tráfego", "search console", "screaming frog"],
+          bullet: "Liderança de projetos de SEO on-page e técnico para fortalecer a autoridade de domínio e impulsionar a performance orgânica.",
+          prose: "lidero projetos de SEO on-page e técnico para fortalecer a autoridade do domínio"
+        },
+        {
+          id: "pluga-inbound",
+          keywords: ["funil", "inbound", "mql", "mqls", "conversao", "conversão", "demanda", "icp", "persona"],
+          bullet: "Alinhamento entre busca do usuário e conversão de negócio no mercado SaaS B2B, estruturando iniciativas de Inbound Marketing, Funil B2B e geração de MQLs.",
+          prose: "uno o que o usuário busca ao que o negócio precisa converter por meio de estratégias de Inbound Marketing, Funil B2B e geração de MQLs"
+        },
+        {
+          id: "pluga-ads",
+          keywords: ["ads", "pago", "pagas", "midia", "mídia", "campanhas", "sincronia"],
+          bullet: "Atuação na sincronia entre orgânico e pago, adaptando ativos de conteúdo para campanhas de Ads.",
+          prose: "atuo na sincronia entre o orgânico e o pago, adaptando ativos de conteúdo para campanhas de Ads"
+        },
+        {
+          id: "pluga-multicanal",
+          keywords: ["multicanal", "blog", "youtube", "redes sociais", "social media", "email", "e-mail", "distribuicao", "distribuição"],
+          bullet: "Coordenação de fluxos e distribuição multicanal em Blog, YouTube, Redes Sociais e E-mail Marketing.",
+          prose: "coordeno fluxos de produção e distribuição multicanal em Blog, YouTube, Redes Sociais e E-mail Marketing"
+        },
+        {
+          id: "pluga-dados",
+          keywords: ["dados", "metricas", "métricas", "relatorios", "relatórios", "analytics", "semrush", "kpis"],
+          bullet: "Transformação do monitoramento de métricas 360° em relatórios estratégicos e planos de ação que guiam a tomada de decisão baseada em dados.",
+          prose: "transformo o monitoramento de métricas 360° em relatórios estratégicos e planos de ação que guiam a tomada de decisão baseada em dados"
+        }
+      ],
+      experiences: [
+        {
+          id: "pluga",
+          company: "Pluga",
+          period: "2022 - Presente",
+          roleByTrack: {
+            seo: "Estrategista de Conteúdo & Líder de Projetos de SEO",
+            geo: "Estrategista de Conteúdo, SEO & Busca Orgânica",
+            strategy: "Estrategista de Conteúdo SaaS B2B",
+            multichannel: "Estrategista de Conteúdo & Operação Multicanal"
+          }
+        },
+        {
+          id: "papoca",
+          company: "Agência Papoca",
+          period: "2021 - 2022",
+          roleByTrack: {
+            seo: "Analista de Conteúdo Estratégico & SEO B2B",
+            geo: "Analista de SEO & Conteúdo Estratégico B2B",
+            strategy: "Estrategista de Conteúdo B2B & SEO",
+            multichannel: "Analista de Conteúdo Estratégico & SEO"
+          }
+        },
+        {
+          id: "camtra",
+          company: "CAMTRA",
+          period: "2021",
+          fullText: "Gestão da presença institucional e social media, coordenando fluxos de comunicação e produção de conteúdo para engajamento de públicos estratégicos e grupos internos.",
+          roleByTrack: {
+            seo: "Analista de Comunicação Institucional & Conteúdo",
+            geo: "Analista de Comunicação & Conteúdo Institucional",
+            strategy: "Analista de Comunicação & Conteúdo Institucional",
+            multichannel: "Gestora de Presença Institucional & Social Media"
+          }
+        },
+        {
+          id: "anf",
+          company: "ANF - Agência de Notícias das Favelas",
+          period: "2020 - 2021",
+          fullText: "Como editora, fui responsável pela gestão direta de pautas e pela revisão dos textos produzidos por colaboradores e colunistas. Atuei na curadoria de conteúdo estratégico para o portal de notícias, garantindo a qualidade editorial e a relevância das histórias publicadas.",
+          roleByTrack: {
+            seo: "Editora & Curadora de Conteúdo Digital",
+            geo: "Editora & Curadora de Qualidade Editorial",
+            strategy: "Editora & Curadora de Conteúdo Estratégico",
+            multichannel: "Editora de Conteúdo & Gestão de Pautas"
+          }
+        }
+      ],
+      skills: {
+        "Estratégia": ["Funil B2B", "Geração de MQLs", "Persona/ICP", "Inbound Marketing"],
+        "SEO e ferramentas": ["SEO on e off-page", "Link Building", "SEMrush", "Google Analytics", "Screaming Frog", "Search Console"],
+        "Gestão": ["Calendário Editorial", "Coordenação de Fluxos", "Distribuição Multicanal"],
+        "Canais de Marketing": ["Blog", "YouTube", "Redes Sociais", "E-mail Marketing", "Adaptação para Ads"]
+      }
+    };
+
+    const KANBAN_STAGES = [
+      { id: "Mapeada", label: "Mapeada" },
+      { id: "Abordagem / Networking", label: "Abordagem / Networking" },
+      { id: "Inscrição", label: "Inscrição" },
+      { id: "Inscrito", label: "Inscrito" },
+      { id: "Entrevista / Processo", label: "Entrevista / Processo" },
+      { id: "Oferta / Finalista", label: "Oferta / Finalista" },
+      { id: "Descartada / Declinada", label: "Descartada / Declinada" }
+    ];
+
+    const NETWORKING_STATUSES = [
+      "Não contatado",
+      "Convite enviado",
+      "Conectado / Mensagem enviada",
+      "Em conversa",
+      "Indicação confirmada"
+    ];
+
+    // =========================================================================
+    // 2. PERSISTÊNCIA SEGURA COM MIGRAÇÃO AUTOMÁTICA (NUNCA APAGA VAGAS DO USUÁRIO)
+    // =========================================================================
+    const TALENT_POOL_BLACKLIST = [
+      "banco de talentos",
+      "talent pool",
+      "cadastro de reserva",
+      "pool de talentos",
+      "banco talentos"
+    ];
+
+    function isTalentPoolJob(title, description) {
+      const text = normalizeText(`${title} ${description}`);
+      return TALENT_POOL_BLACKLIST.some(term => text.includes(term));
+    }
+
+    function evaluateWorkModelPolicy(job) {
+      const modelNorm = normalizeText(job.model);
+      const textNorm = normalizeText(`${job.model} ${job.location} ${job.description}`);
+
+      // 1. Remoto ou Rio de Janeiro -> Prioridade Máxima
+      if (modelNorm.includes("remoto") || modelNorm.includes("rj") || modelNorm.includes("rio de janeiro")) {
+        return {
+          tier: "priority",
+          rank: 3,
+          gaiaLocScore: 10,
+          fitLocBonus: 18,
+          badgeLabel: "Prioridade • Remoto / RJ",
+          badgeClass: "bg-olive-50 text-olive-800 border-olive-200"
+        };
+      }
+
+      // 2. Híbrido SP dentro da regra (máx. 2x a cada 15 dias / quinzenal)
+      const isSpFlexExplicit = modelNorm.includes("2x/15d") || modelNorm.includes("quinzenal");
+      const hasStrictWeeklySp =
+        textNorm.includes("3x na semana") ||
+        textNorm.includes("3 vezes na semana") ||
+        textNorm.includes("4x na semana") ||
+        textNorm.includes("4 vezes na semana") ||
+        textNorm.includes("2x por semana") ||
+        textNorm.includes("2 vezes por semana") ||
+        textNorm.includes("2x na semana") ||
+        textNorm.includes("2 vezes na semana") ||
+        modelNorm.includes(">2x");
+
+      if (isSpFlexExplicit && !hasStrictWeeklySp) {
+        return {
+          tier: "sp-flex",
+          rank: 2,
+          gaiaLocScore: 7,
+          fitLocBonus: 11,
+          badgeLabel: "Híbrido SP • Máx. 2x/15d",
+          badgeClass: "bg-terracotta-50 text-terracotta-800 border-terracotta-200"
+        };
+      }
+
+      // 3. Fora do critério (Híbrido SP semanal / Presencial fora do RJ)
+      return {
+        tier: "outside",
+        rank: 1,
+        gaiaLocScore: 1,
+        fitLocBonus: -12,
+        badgeLabel: "Fora do Critério (SP/Presencial)",
+        badgeClass: "bg-rose-50 text-rose-700 border-rose-200"
+      };
+    }
+
+    const STORAGE_KEY = "careeros_ludmila_master_db";
+    const LEGACY_STORAGE_KEYS = [
+      "careeros_ludmila_v5_editorial",
+      "careeros_ludmila_v4_vibrant",
+      "careeros_ludmila_v3_clean",
+      "careeros_ludmila_v2",
+      "careeros_ludmila_v1"
+    ];
+    const GIST_CONFIG_KEY = "careeros_ludmila_gist_cfg";
+
+    let appState = {
+      engine: "fit",
+      educationStatus: "Concluído",
+      gupyFormatMode: "prose",
+      jobs: []
+    };
+
+    let currentEditingJobId = null;
+    let draggedJobId = null;
+
+    function createDefaultPersonas() {
+      return [
+        {
+          id: "p1",
+          roleType: "Hiring Manager",
+          suggestedTitle: "Head de Marketing OR Gerente de Conteúdo OR Coordenador SEO",
+          contactName: "",
+          profileUrl: "",
+          status: "Não contatado",
+          lastContact: "",
+          notes: ""
+        },
+        {
+          id: "p2",
+          roleType: "Liderança de Negócios",
+          suggestedTitle: "CMO OR Diretor de Marketing OR VP de Growth",
+          contactName: "",
+          profileUrl: "",
+          status: "Não contatado",
+          lastContact: "",
+          notes: ""
+        },
+        {
+          id: "p3",
+          roleType: "Par do Time",
+          suggestedTitle: "Especialista de SEO OR Estrategista de Conteúdo",
+          contactName: "",
+          profileUrl: "",
+          status: "Não contatado",
+          lastContact: "",
+          notes: ""
+        },
+        {
+          id: "p4",
+          roleType: "Tech / Business Recruiter",
+          suggestedTitle: "Tech Recruiter OR Talent Acquisition Marketing",
+          contactName: "",
+          profileUrl: "",
+          status: "Não contatado",
+          lastContact: "",
+          notes: ""
+        }
+      ];
+    }
+
+    function getSeedJobs() {
+      return [
+        {
+          id: "job-eff-1",
+          company: "Compass UOL",
+          title: "Analista de SEO Pleno",
+          platform: "Gupy",
+          model: "Remoto",
+          location: "Remoto (Brasil)",
+          publishedAt: "12/11/2026",
+          verifiedAt: "13/11/2026 16:15",
+          stage: "Mapeada",
+          url: "https://compass.gupy.io/jobs/12872763",
+          discardReason: "",
+          updatedAt: "2026-11-13T16:15:00.000Z",
+          notes: "- Vaga efetiva ativa na Gupy.\n- Destacar liderança de SEO on-page e técnico na Pluga, Search Console, Screaming Frog e revisão editorial.",
+          description: "Atuação como Analista de SEO Pleno em projetos digitais. Requisitos: SEO técnico e on-page, estratégia de conteúdo, Google Search Console, ferramentas de SEO, HTML, sitemaps, robots.txt, canonical, schema.org, copywriting, revisão de títulos, meta descriptions, headings e E-E-A-T, GEO e AEO, IA generativa no fluxo de SEO e conteúdo, análise de dados em planilhas.",
+          personas: createDefaultPersonas()
+        },
+        {
+          id: "job-eff-2",
+          company: "Gear SEO",
+          title: "Pessoa Analista de Conteúdo Pleno",
+          platform: "Outro",
+          model: "Remoto",
+          location: "Remoto / Híbrido SP",
+          publishedAt: "13/11/2026",
+          verifiedAt: "13/11/2026 16:15",
+          stage: "Mapeada",
+          url: "https://gearseo.com.br/vaga/pessoa-analista-de-conteudo/",
+          discardReason: "",
+          updatedAt: "2026-11-13T16:15:00.000Z",
+          notes: "- Forte sinergia com passagem pela Agência Papoca (contas B2B Zendesk e Xpeed) e operação editorial na Pluga.",
+          description: "Buscamos Pessoa Analista de Conteúdo Pleno para produção, edição e otimização de conteúdos para SEO com foco em qualidade técnica. Vivência com Google Search Console, Google Analytics, SEMrush, Ahrefs, gestão de projetos, acompanhamento de métricas e performance, relacionamento com clientes, fluxos de IA e automação de conteúdo.",
+          personas: createDefaultPersonas()
+        },
+        {
+          id: "job-eff-3",
+          company: "STLFLIX",
+          title: "Analista de SEO Sênior",
+          platform: "LinkedIn",
+          model: "Remoto",
+          location: "Remoto (Brasil)",
+          publishedAt: "Nov/2026",
+          verifiedAt: "13/11/2026 16:15",
+          stage: "Mapeada",
+          url: "https://br.indeed.com/q-stlflix-vagas.html",
+          discardReason: "",
+          updatedAt: "2026-11-13T16:15:00.000Z",
+          notes: "- Escopo sênior de coordenação operacional e estratégica de SEO on-page/técnico e crescimento orgânico.",
+          description: "Analista de SEO Sênior para coordenar atividades operacionais e estratégicas das otimizações de SEO, garantir performance orgânica saudável para gerar tráfego qualificado, liderar projetos de SEO on-page e técnico, planejamento e estratégia de conteúdo orientada a dados.",
+          personas: createDefaultPersonas()
+        },
+        {
+          id: "job-eff-4",
+          company: "EPAM Systems",
+          title: "SEO/GEO Consultant",
+          platform: "LinkedIn",
+          model: "Remoto",
+          location: "Remoto (Brasil / Global)",
+          publishedAt: "Nov/2026",
+          verifiedAt: "13/11/2026 16:15",
+          stage: "Mapeada",
+          url: "https://br.indeed.com/q-seo-l-remoto-vagas.html",
+          discardReason: "",
+          updatedAt: "2026-11-13T16:15:00.000Z",
+          notes: "- Consultoria hands-on de SEO técnico e conteúdo para autoridade de domínio.",
+          description: "Hands-on Technical and Content SEO/GEO Consultant. Responsável por keyword and entity research, gestão de stakeholders, estratégias de performance orgânica, SEO on-page e técnico e fortalecimento de autoridade de domínio.",
+          personas: createDefaultPersonas()
+        },
+        {
+          id: "job-eff-5",
+          company: "Aprova (Govtech)",
+          title: "Gestor(a) / Estrategista de Conteúdo",
+          platform: "LinkedIn",
+          model: "Remoto",
+          location: "Remoto (Brasil)",
+          publishedAt: "Nov/2026",
+          verifiedAt: "13/11/2026 16:15",
+          stage: "Mapeada",
+          url: "https://br.indeed.com/q-estrategista-de-conte%C3%BAdo-vagas.html",
+          discardReason: "",
+          updatedAt: "2026-11-13T16:15:00.000Z",
+          notes: "- Une SEO, marketing de conteúdo B2B SaaS/Govtech, distribuição multicanal e sincronia com campanhas pagas (Ads).",
+          description: "Gestor(a) / Estrategista de Conteúdo para SaaS/Govtech B2B. Atuação com SEO, marketing de conteúdo, campanhas pagas nas redes sociais (sincronia orgânico e pago / adaptação para Ads), storytelling, planejamento de calendário editorial, produção e distribuição multicanal (Blog, YouTube, Redes Sociais).",
+          personas: createDefaultPersonas()
+        },
+        {
+          id: "job-eff-6",
+          company: "MoveOn / B2B Tecnologia",
+          title: "Analista de Conteúdo e Social Media Pleno – B2B Tecnologia",
+          platform: "Gupy",
+          model: "Remoto",
+          location: "Remoto (Brasil)",
+          publishedAt: "Nov/2026",
+          verifiedAt: "13/11/2026 16:15",
+          stage: "Mapeada",
+          url: "https://moveon.gupy.io/jobs/12597322",
+          discardReason: "",
+          updatedAt: "2026-11-13T16:15:00.000Z",
+          notes: "- Vaga efetiva ativa na Gupy para B2B Tecnologia: conecta Pluga + CAMTRA (Social Media) + Inbound Marketing.",
+          description: "Analista de Conteúdo e Social Media Pleno – B2B Tecnologia. Gestão de conteúdo B2B Tecnologia, planejamento e execução de calendário editorial, gestão de redes sociais e social media, inbound marketing, blog, geração de demanda, funil B2B e análise de métricas.",
+          personas: createDefaultPersonas()
+        }
+      ];
+    }
+
+    // =========================================================================
+    // 3. MOTOR DUAL DE ADERÊNCIA (FIT GERAL VS. ALGORITMO GAIA DA GUPY)
+    // =========================================================================
+    function normalizeText(str) {
+      return String(str || "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+    }
+
+    const TRACKED_TERMS = [
+      { term: "SEO", aliases: ["seo", "seo on-page", "seo técnico", "seo tecnico"], inProfile: true, weight: 8 },
+      { term: "Estratégia de Conteúdo", aliases: ["estrategia de conteudo", "estratégia de conteúdo", "content strategy", "marketing de conteudo", "marketing de conteúdo"], inProfile: true, weight: 8 },
+      { term: "SaaS / B2B", aliases: ["saas", "b2b", "tecnologia"], inProfile: true, weight: 7 },
+      { term: "Calendário Editorial", aliases: ["calendario editorial", "calendário editorial", "pautas", "editorial"], inProfile: true, weight: 6 },
+      { term: "Funil B2B / Inbound / MQLs", aliases: ["funil", "inbound", "mql", "mqls", "geracao de demanda", "geração de demanda", "conversao", "conversão"], inProfile: true, weight: 7 },
+      { term: "Google Search Console", aliases: ["search console", "searchconsole", "gsc"], inProfile: true, weight: 6 },
+      { term: "Google Analytics", aliases: ["google analytics", "analytics", "ga4"], inProfile: true, weight: 5 },
+      { term: "SEMrush", aliases: ["semrush"], inProfile: true, weight: 6 },
+      { term: "Screaming Frog", aliases: ["screaming frog"], inProfile: true, weight: 5 },
+      { term: "Link Building", aliases: ["link building", "off-page", "autoridade de dominio", "autoridade de domínio"], inProfile: true, weight: 5 },
+      { term: "Distribuição Multicanal", aliases: ["multicanal", "blog", "youtube", "e-mail marketing", "email marketing"], inProfile: true, weight: 5 },
+      { term: "Social Media / Redes Sociais", aliases: ["social media", "redes sociais"], inProfile: true, weight: 5 },
+      { term: "Sincronia Orgânico & Ads", aliases: ["ads", "pago", "midia paga", "mídia paga", "campanhas pagas"], inProfile: true, weight: 5 },
+      { term: "Métricas & Dados 360°", aliases: ["metricas", "métricas", "dados", "relatorios", "relatórios", "kpis", "planilhas"], inProfile: true, weight: 5 },
+      { term: "Revisão & Curadoria Editorial", aliases: ["revisao", "revisão", "curadoria", "copywriting"], inProfile: true, weight: 5 },
+      { term: "GEO / AEO / IA Generativa", aliases: ["geo", "aeo", "ia generativa", "generative", "llm", "automacao de conteudo"], inProfile: false, weight: 4 },
+      { term: "HTML / Schema / Sitemaps", aliases: ["html", "schema", "sitemaps", "robots.txt", "canonical"], inProfile: false, weight: 4 },
+      { term: "Ahrefs", aliases: ["ahrefs"], inProfile: false, weight: 3 },
+      { term: "E-E-A-T", aliases: ["e-e-a-t", "eeat"], inProfile: false, weight: 3 }
+    ];
+
+    function evaluateJobScores(job) {
+      const fullText = normalizeText(`${job.title} ${job.description}`);
+      const matchedTerms = [];
+      const missingTerms = [];
+      let matchedWeight = 0;
+      let totalRequestedWeight = 0;
+
+      TRACKED_TERMS.forEach(item => {
+        const found = item.aliases.some(al => fullText.includes(normalizeText(al)));
+        if (found) {
+          totalRequestedWeight += item.weight;
+          if (item.inProfile) {
+            matchedTerms.push(item.term);
+            matchedWeight += item.weight;
+          } else {
+            missingTerms.push(item.term);
+          }
+        }
+      });
+
+      const semanticRatio = totalRequestedWeight > 0 ? matchedWeight / totalRequestedWeight : 0.78;
+
+      // 1. Experiência & PLN Semântico (até 50 pts)
+      let expScore = Math.round(28 + semanticRatio * 22);
+      if (fullText.includes("pleno") || fullText.includes("senior") || fullText.includes("sênior") || fullText.includes("estrategista")) {
+        expScore = Math.min(50, expScore + 2);
+      }
+      expScore = Math.max(22, Math.min(50, expScore));
+
+      // 2. Formação Acadêmica (Concluído = 20 pts vs Cursando = 12 pts)
+      const eduScore = appState.educationStatus === "Concluído" ? 20 : 12;
+
+      // 3. Habilidades & Ferramentas (até 15 pts)
+      const toolMatches = matchedTerms.filter(t =>
+        ["SEO", "Google Search Console", "Google Analytics", "SEMrush", "Screaming Frog", "Link Building", "Funil B2B / Inbound / MQLs"].includes(t)
+      ).length;
+      const skillsScore = Math.min(15, 7 + toolMatches * 2);
+
+      // 4. Localidade & Modelo (Prioridade: Remoto / RJ = 10 pts; Híbrido SP máx 2x/15d = 7 pts; Fora = 1 pt)
+      const modelPolicy = evaluateWorkModelPolicy(job);
+      const locScore = modelPolicy.gaiaLocScore;
+
+      // 5. Indicação no Mini-CRM (5 pts se houver indicação confirmada)
+      const hasReferral = (job.personas || []).some(p => p.status === "Indicação confirmada");
+      const netScore = hasReferral ? 5 : 0;
+
+      const gupyTotal = expScore + eduScore + skillsScore + locScore + netScore;
+
+      // Fit Geral Executivo (%)
+      let fitScore = Math.round(semanticRatio * 75 + modelPolicy.fitLocBonus + (hasReferral ? 7 : 3));
+      fitScore = Math.max(30, Math.min(98, fitScore));
+
+      return {
+        fitScore,
+        gupyTotal,
+        modelPolicy,
+        matchedTerms,
+        missingTerms,
+        gaiaBreakdown: {
+          exp: { label: "Experiência & PLN Semântico", score: expScore, max: 50 },
+          edu: { label: `Formação (${appState.educationStatus})`, score: eduScore, max: 20 },
+          skills: { label: "Habilidades & Ferramentas", score: skillsScore, max: 15 },
+          loc: { label: `Modelo (${modelPolicy.badgeLabel})`, score: locScore, max: 10 },
+          net: { label: "Indicação / Mini-CRM", score: netScore, max: 5 }
+        }
+      };
+    }
+
+    // =========================================================================
+    // 4. MOTOR DE ADAPTAÇÃO SEMÂNTICA REAL POR VAGA (buildTailoredResume)
+    // =========================================================================
+    const TRACK_DEFINITIONS = {
+      seo: {
+        id: "seo",
+        label: "SEO Técnico, On/Off-Page & Performance Orgânica",
+        cvTitle: "Especialista em SEO Técnico, On-Page & Performance Orgânica",
+        openingHook: "Especialista em SEO on-page/técnico e performance orgânica com atuação comprovada no fortalecimento de autoridade de domínio e geração de tráfego qualificado.",
+        coverAngle: "liderança de projetos de SEO on-page e técnico, auditoria de arquitetura e fortalecimento de autoridade de domínio orientada a dados"
+      },
+      geo: {
+        id: "geo",
+        label: "GEO (Generative Engine Optimization) & Busca em IA",
+        cvTitle: "Consultora de SEO Técnico, Curadoria Editorial & Busca Orgânica (GEO/IA)",
+        openingHook: "Estrategista de busca orgânica que une SEO técnico, arquitetura semântica e rigorosa curadoria editorial para maximizar visibilidade e autoridade em buscadores e respostas generativas.",
+        coverAngle: "sinergia entre SEO técnico, estruturação semântica e curadoria editorial de alta confiabilidade para mecanismos de busca tradicionais e generativos"
+      },
+      strategy: {
+        id: "strategy",
+        label: "Estratégia de Conteúdo B2B, Inbound & Funil / MQLs",
+        cvTitle: "Estrategista de Conteúdo B2B, Inbound Marketing & Funil",
+        openingHook: "Estrategista de conteúdo SaaS B2B focada em unir o que o usuário busca ao que o negócio precisa converter, estruturando funil B2B, Inbound Marketing e geração de MQLs.",
+        coverAngle: "planejamento macro de calendário editorial, arquitetura de funil B2B, Inbound Marketing e sincronia entre conteúdo orgânico e campanhas de Ads"
+      },
+      multichannel: {
+        id: "multichannel",
+        label: "Operação Multicanal, Editorial & Social Media B2B",
+        cvTitle: "Analista de Conteúdo Estratégico, Editorial & Operação Multicanal",
+        openingHook: "Profissional de conteúdo e comunicação com vivência de ponta a ponta na coordenação de fluxos editoriais, revisão e distribuição multicanal em Blog, YouTube, Redes Sociais e Ads.",
+        coverAngle: "coordenação de fluxos de produção de ponta a ponta, gestão editorial e distribuição multicanal integrada para engajamento e reputação de marca"
+      }
+    };
+
+    function detectJobSector(job) {
+      const text = normalizeText(`${job.company} ${job.title} ${job.description}`);
+      if (text.includes("govtech") || text.includes("governo") || text.includes("aprova")) return "SaaS / Govtech B2B";
+      if (text.includes("consultoria") || text.includes("consultant") || text.includes("agencia") || text.includes("agência") || text.includes("gear seo") || text.includes("epam")) return "Consultoria & Projetos Digitais";
+      if (text.includes("saas") || text.includes("b2b") || text.includes("tecnologia") || text.includes("software")) return "Tecnologia & SaaS B2B";
+      if (text.includes("educacao") || text.includes("educação") || text.includes("streaming") || text.includes("stlflix")) return "Educação & Plataformas Digitais";
+      return "Mercado Digital & B2B";
+    }
+
+    function classifyJobTrack(job) {
+      if (job.manualTrack && TRACK_DEFINITIONS[job.manualTrack]) {
+        return TRACK_DEFINITIONS[job.manualTrack];
+      }
+
+      const titleNorm = normalizeText(job.title);
+      const fullNorm = normalizeText(`${job.title} ${job.description}`);
+
+      const scores = { seo: 0, geo: 0, strategy: 0, multichannel: 0 };
+
+      // Pesos fortes pelo título da vaga
+      if (titleNorm.includes("geo") || titleNorm.includes("aeo") || titleNorm.includes("ia")) scores.geo += 35;
+      if (titleNorm.includes("seo")) scores.seo += 30;
+      if (titleNorm.includes("estrategista") || titleNorm.includes("gestor") || titleNorm.includes("strategist")) scores.strategy += 28;
+      if (titleNorm.includes("social media") || titleNorm.includes("analista de conteudo") || titleNorm.includes("analista de conteúdo")) scores.multichannel += 26;
+
+      // Pesos semânticos pela descrição
+      ["tecnico", "técnico", "screaming frog", "search console", "sitemaps", "robots", "canonical", "schema", "link building", "on-page", "off-page"].forEach(k => {
+        if (fullNorm.includes(k)) scores.seo += 6;
+      });
+      ["geo", "aeo", "ia generativa", "generative", "llm", "entity", "e-e-a-t"].forEach(k => {
+        if (fullNorm.includes(k)) scores.geo += 9;
+      });
+      ["funil", "mql", "inbound", "icp", "persona", "conversao", "conversão", "b2b", "saas", "ads", "pago"].forEach(k => {
+        if (fullNorm.includes(k)) scores.strategy += 6;
+      });
+      ["social media", "redes sociais", "youtube", "multicanal", "revisao", "revisão", "pautas", "fluxos", "editorial", "storytelling"].forEach(k => {
+        if (fullNorm.includes(k)) scores.multichannel += 6;
+      });
+
+      const bestId = Object.entries(scores).sort((a, b) => b[1] - a[1])[0][0];
+      return TRACK_DEFINITIONS[bestId] || TRACK_DEFINITIONS.strategy;
+    }
+
+    function buildTailoredResume(job) {
+      const evalData = evaluateJobScores(job);
+      const track = classifyJobTrack(job);
+      const sector = detectJobSector(job);
+      const jobNorm = normalizeText(`${job.title} ${job.description}`);
+
+      // 1. Pontuar e reordenar as 6 frentes reais da Pluga (2022 - Presente)
+      const rankedFrentes = CANDIDATE_PROFILE.plugaFrentes.map((frente, idx) => {
+        let score = 10 - idx; // desempate natural
+        frente.keywords.forEach(kw => {
+          if (jobNorm.includes(normalizeText(kw))) score += 12;
+        });
+        if (track.id === "seo" && (frente.id === "pluga-seo" || frente.id === "pluga-dados")) score += 20;
+        if (track.id === "geo" && (frente.id === "pluga-seo" || frente.id === "pluga-dados")) score += 20;
+        if (track.id === "strategy" && (frente.id === "pluga-saas" || frente.id === "pluga-inbound" || frente.id === "pluga-ads")) score += 20;
+        if (track.id === "multichannel" && (frente.id === "pluga-multicanal" || frente.id === "pluga-saas")) score += 20;
+        return { ...frente, score };
+      }).sort((a, b) => b.score - a.score);
+
+      const top4PlugaFrentes = rankedFrentes.slice(0, 4);
+      const plugaBullets = top4PlugaFrentes.map(f => f.bullet);
+      const plugaProse = `Na Pluga (2022 - Presente), ${top4PlugaFrentes[0].prose}. Além disso, ${top4PlugaFrentes[1].prose}, ${top4PlugaFrentes[2].prose} e ${top4PlugaFrentes[3].prose}.`;
+
+      // 2. Resumo Profissional Dinâmico (3-4 linhas densas, 100% factual)
+      const injectedKws = evalData.matchedTerms.slice(0, 6);
+      const kwSentence = injectedKws.length > 0
+        ? `Domínio prático em ${injectedKws.join(", ")}, aplicando dados e métricas 360° para orientar decisões em ambientes de ${sector}.`
+        : `Vivência sólida em planejamento editorial, SEO, distribuição multicanal e análise de métricas 360° para ${sector}.`;
+
+      const tailoredSummary = `${track.openingHook} Atualmente na Pluga (SaaS B2B), ${top4PlugaFrentes[0].prose} e ${top4PlugaFrentes[1].prose}, somando passagem anterior pela Agência Papoca (contas B2B como Zendesk e Xpeed). ${kwSentence}`;
+
+      // 3. Experiências Reframed & Ordenadas conforme relevância para a vaga
+      const tailoredExperiences = CANDIDATE_PROFILE.experiences.map(exp => {
+        if (exp.id === "pluga") {
+          return {
+            id: exp.id,
+            company: exp.company,
+            period: exp.period,
+            role: exp.roleByTrack[track.id] || "Estrategista de Conteúdo",
+            bullets: plugaBullets,
+            prose: plugaProse,
+            priority: 1000
+          };
+        }
+
+        if (exp.id === "papoca") {
+          const isSeoFocus = track.id === "seo" || track.id === "geo";
+          const bullets = isSeoFocus
+            ? [
+                "Desenvolvimento de SEO estratégico e conteúdo para grandes contas B2B (Zendesk e Xpeed), com foco em autoridade digital.",
+                "Estruturação de conteúdo orientado à educação do mercado e fortalecimento da reputação de marca."
+              ]
+            : [
+                "Desenvolvimento de conteúdo estratégico e SEO para grandes contas B2B, como Zendesk e Xpeed.",
+                "Foco em autoridade digital, reputação de marca e educação do mercado."
+              ];
+          const prose = isSeoFocus
+            ? "Desenvolvimento de SEO estratégico e produção de conteúdo para grandes contas B2B como Zendesk e Xpeed, com foco em autoridade digital, educação do mercado e reputação de marca."
+            : "Desenvolvimento de conteúdo estratégico e SEO para grandes contas B2B, como Zendesk e Xpeed, com foco em autoridade digital, reputação de marca e educação do mercado.";
+          return {
+            id: exp.id,
+            company: exp.company,
+            period: exp.period,
+            role: exp.roleByTrack[track.id],
+            bullets,
+            prose,
+            priority: 800
+          };
+        }
+
+        if (exp.id === "camtra") {
+          const isSocial = track.id === "multichannel" || jobNorm.includes("social");
+          const bullets = isSocial
+            ? [
+                "Gestão de social media e presença institucional, coordenando fluxos de comunicação e produção de conteúdo.",
+                "Engajamento contínuo de públicos estratégicos e grupos internos."
+              ]
+            : [
+                "Coordenação de fluxos de comunicação e produção de conteúdo para engajamento de públicos estratégicos e grupos internos.",
+                "Gestão da presença institucional e canais de social media."
+              ];
+          return {
+            id: exp.id,
+            company: exp.company,
+            period: exp.period,
+            role: exp.roleByTrack[track.id],
+            bullets,
+            prose: exp.fullText,
+            priority: isSocial ? 750 : 600
+          };
+        }
+
+        // ANF
+        const isEditorial = track.id === "geo" || track.id === "multichannel" || jobNorm.includes("revis") || jobNorm.includes("editorial");
+        const bullets = isEditorial
+          ? [
+              "Curadoria de conteúdo estratégico para portal de notícias, garantindo qualidade editorial, rigor na revisão e relevância.",
+              "Gestão direta de pautas e revisão dos textos produzidos por colaboradores e colunistas."
+            ]
+          : [
+              "Gestão direta de pautas e revisão dos textos produzidos por colaboradores e colunistas.",
+              "Curadoria de conteúdo estratégico para o portal de notícias, garantindo a qualidade editorial e a relevância das histórias publicadas."
+            ];
+        return {
+          id: exp.id,
+          company: exp.company,
+          period: exp.period,
+          role: exp.roleByTrack[track.id],
+          bullets,
+          prose: exp.fullText,
+          priority: isEditorial ? 760 : 550
+        };
+      });
+
+      // 4. Reordenação dinâmica dos 4 pilares de Habilidades Chave
+      const skillPillarsEntries = Object.entries(CANDIDATE_PROFILE.skills).map(([pillar, items]) => {
+        let pScore = 0;
+        items.forEach(item => {
+          if (jobNorm.includes(normalizeText(item))) pScore += 15;
+        });
+        if ((track.id === "seo" || track.id === "geo") && pillar === "SEO e ferramentas") pScore += 40;
+        if (track.id === "strategy" && pillar === "Estratégia") pScore += 40;
+        if (track.id === "multichannel" && (pillar === "Canais de Marketing" || pillar === "Gestão")) pScore += 35;
+
+        // Ordena os itens dentro do pilar colocando os que deram match primeiro
+        const sortedItems = [...items].sort((a, b) => {
+          const matchA = jobNorm.includes(normalizeText(a)) ? 1 : 0;
+          const matchB = jobNorm.includes(normalizeText(b)) ? 1 : 0;
+          return matchB - matchA;
+        });
+
+        return { pillar, items: sortedItems, pScore };
+      }).sort((a, b) => b.pScore - a.pScore);
+
+      const orderedSkills = {};
+      skillPillarsEntries.forEach(entry => {
+        orderedSkills[entry.pillar] = entry.items;
+      });
+
+      return {
+        track,
+        sector,
+        injectedKeywords: injectedKws,
+        header: {
+          name: CANDIDATE_PROFILE.name,
+          title: track.cvTitle,
+          contact: `${CANDIDATE_PROFILE.location} | ${CANDIDATE_PROFILE.phone} | ${CANDIDATE_PROFILE.email} | ${CANDIDATE_PROFILE.linkedin}`
+        },
+        summary: tailoredSummary,
+        experiences: tailoredExperiences,
+        education: `${CANDIDATE_PROFILE.education.degree} — Status: ${appState.educationStatus}`,
+        skills: orderedSkills,
+        evalData
+      };
+    }
+
+    function generateGupyBlocks(job) {
+      const tailored = buildTailoredResume(job);
+      const isBullets = appState.gupyFormatMode === "bullets";
+
+      return [
+        {
+          id: "blk-summary",
+          title: `1. Resumo Profissional Calibrado (${tailored.track.label})`,
+          subtitle: "Campo 'Sobre / Resumo' na Gupy • Adaptado semanticamente à vaga",
+          content: tailored.summary
+        },
+        ...tailored.experiences.map((exp, i) => ({
+          id: `blk-exp-${exp.id}`,
+          title: `${i + 2}. ${exp.company} (${exp.period}) — Cargo sugerido: ${exp.role}`,
+          subtitle: isBullets ? "Formato em tópicos escaneáveis" : "Formato texto corrido otimizado para campos de formulário da Gupy",
+          content: isBullets ? exp.bullets.map(b => `• ${b}`).join("\n") : exp.prose
+        })),
+        {
+          id: `blk-skills`,
+          title: `${tailored.experiences.length + 2}. Habilidades Chave (Ordenadas por Prioridade da Vaga)`,
+          subtitle: "Pilares reorganizados destacando as competências pedidas na descrição",
+          content: Object.entries(tailored.skills)
+            .map(([cat, list]) => `${cat}: ${list.join(", ")}.`)
+            .join("\n")
+        }
+      ];
+    }
+
+    function generateCoverLetter(job) {
+      const tailored = buildTailoredResume(job);
+      const matchedSample = tailored.injectedKeywords.join(", ") || "estratégia de conteúdo B2B, SEO e performance orgânica";
+
+      return `Olá, equipe de recrutamento e liderança da ${job.company},
+
+Acompanho a atuação da ${job.company} no segmento de ${tailored.sector} e me candidatei à posição de ${job.title}. ${tailored.track.openingHook}
+
+Na Pluga (2022 - Presente), ${tailored.experiences[0].prose.replace("Na Pluga (2022 - Presente), ", "")} Essa experiência dialoga diretamente com os desafios de ${tailored.track.coverAngle}.
+
+Anteriormente, na Agência Papoca (2021 - 2022), desenvolvi conteúdo estratégico e SEO para grandes contas B2B, como Zendesk e Xpeed, com foco em autoridade digital, reputação de marca e educação do mercado. Complemento essa base com minha passagem pela CAMTRA (2021), na gestão da presença institucional, social media e fluxos de comunicação, e como editora na ANF - Agência de Notícias das Favelas (2020 - 2021), conduzindo a gestão direta de pautas, revisão de textos e curadoria editorial.
+
+Analisando os requisitos de ${job.title}, destaco minha vivência prática com ${matchedSample}, apoiada por ferramentas como SEMrush, Google Analytics, Screaming Frog e Search Console, além da formação em Bacharelado em Jornalismo (${appState.educationStatus}).
+
+Será um prazer conversar sobre como posso contribuir para os resultados orgânicos, editoriais e de conversão da ${job.company}.
+
+Atenciosamente,
+Ludmila Silva
+${CANDIDATE_PROFILE.phone} | ${CANDIDATE_PROFILE.email}
+${CANDIDATE_PROFILE.linkedin}`;
+    }
+
+    function generatePersonaScripts(job, persona) {
+      const company = job.company;
+      const title = job.title;
+
+      const scripts = {
+        "Hiring Manager": {
+          invite: `Olá! Vi a vaga de ${title} na ${company} e me identifiquei bastante. Atuo como Estrategista de Conteúdo na Pluga (SaaS B2B), liderando operação editorial, SEO on-page/técnico e métricas 360°. Gostaria de conectar.`,
+          followup: `Olá! Tudo bem? Acabei de me candidatar para ${title} na ${company}. Hoje gerencio a operação de conteúdo e performance orgânica da Pluga (SaaS B2B) e anteriormente atendi contas B2B como Zendesk e Xpeed na Agência Papoca. Fico à disposição caso faça sentido trocarmos uma breve ideia sobre os desafios de conteúdo e SEO do time.`
+        },
+        "Liderança de Negócios": {
+          invite: `Olá! Acompanho o trabalho da ${company}. Sou Estrategista de Conteúdo B2B (Pluga, ex-Agência Papoca atendendo Zendesk/Xpeed) com foco em SEO, Inbound e geração de MQLs. Gostaria de conectar por aqui.`,
+          followup: `Olá! Como vai? Tenho acompanhado a ${company} e apliquei para a vaga de ${title}. Minha atuação une planejamento editorial, SEO on-page/técnico e sincronia com Ads para converter demanda orgânica em resultados B2B. Será um prazer conectar e acompanhar as novidades da área.`
+        },
+        "Par do Time": {
+          invite: `Oi! Tudo bem? Vi a oportunidade de ${title} na ${company} e gostaria de conectar. Trabalho com estratégia de conteúdo SaaS B2B e SEO na Pluga e gosto de trocar experiências com profissionais da área.`,
+          followup: `Oi! Tudo certo? Apliquei para a vaga de ${title} na ${company}. Como atuamos na mesma frente de Conteúdo e SEO, gostaria de saber como está estruturada a rotina editorial e de performance orgânica por aí hoje.`
+        },
+        "Tech / Business Recruiter": {
+          invite: `Olá! Tudo bem? Acabei de me inscrever na vaga de ${title} na ${company}. Tenho experiência sólida em Conteúdo SaaS B2B, SEO técnico e Inbound (Pluga e Agência Papoca). Gostaria de conectar.`,
+          followup: `Olá! Tudo bem? Me candidatei recentemente para ${title} na ${company} e gostaria de me apresentar brevemente: sou formada em Jornalismo e atuo como Estrategista de Conteúdo SaaS B2B na Pluga, gerenciando SEO, calendário editorial, métricas 360° e multicanal. Fico à disposição para o processo seletivo.`
+        }
+      };
+
+      return scripts[persona.roleType] || scripts["Hiring Manager"];
+    }
+
+    // =========================================================================
+    // 5. PERSISTÊNCIA LOCAL & SINCRONIZAÇÃO NUVEM (GITHUB GIST)
+    // =========================================================================
+    function loadState() {
+      try {
+        const savedMaster = localStorage.getItem(STORAGE_KEY);
+        if (savedMaster) {
+          const parsed = JSON.parse(savedMaster);
+          if (parsed && Array.isArray(parsed.jobs)) {
+            appState = {
+              engine: parsed.engine || "fit",
+              educationStatus: parsed.educationStatus || "Concluído",
+              gupyFormatMode: parsed.gupyFormatMode || "prose",
+              jobs: parsed.jobs
+            };
+          }
+        }
+
+        // Resgata e mescla automaticamente vagas salvas em versões anteriores sem apagar nada
+        let recoveredCount = 0;
+        const existingKeys = new Set(
+          appState.jobs.map(j => `${normalizeText(j.company)}|${normalizeText(j.title)}`)
+        );
+
+        LEGACY_STORAGE_KEYS.forEach(legacyKey => {
+          const legacyRaw = localStorage.getItem(legacyKey);
+          if (!legacyRaw) return;
+          try {
+            const legacyParsed = JSON.parse(legacyRaw);
+            if (legacyParsed && Array.isArray(legacyParsed.jobs)) {
+              if (!savedMaster && legacyParsed.engine) appState.engine = legacyParsed.engine;
+              if (!savedMaster && legacyParsed.educationStatus) appState.educationStatus = legacyParsed.educationStatus;
+
+              legacyParsed.jobs.forEach(job => {
+                const sig = `${normalizeText(job.company)}|${normalizeText(job.title)}`;
+                if (!existingKeys.has(sig)) {
+                  existingKeys.add(sig);
+                  appState.jobs.push(job);
+                  recoveredCount++;
+                }
+              });
+            }
+          } catch (_) {}
+        });
+
+        // Só carrega as vagas iniciais se o banco estiver 100% vazio após checar todas as chaves
+        if (appState.jobs.length === 0) {
+          appState.jobs = getSeedJobs();
+        }
+
+        saveState();
+        if (recoveredCount > 0) {
+          setTimeout(() => showToast(`${recoveredCount} vaga(s) anterior(es) recuperada(s) e preservada(s).`), 400);
+        }
+      } catch (e) {
+        if (appState.jobs.length === 0) {
+          appState.jobs = getSeedJobs();
+        }
+      }
+      updateGistIndicator();
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      } catch (e) {
+        showToast("Erro ao salvar no navegador.", "error");
+      }
+    }
+
+    function resetToCuratedSeeds() {
+      const existingKeys = new Set(
+        appState.jobs.map(j => `${normalizeText(j.company)}|${normalizeText(j.title)}`)
+      );
+      let added = 0;
+      getSeedJobs().forEach(seed => {
+        const sig = `${normalizeText(seed.company)}|${normalizeText(seed.title)}`;
+        if (!existingKeys.has(sig)) {
+          appState.jobs.push(seed);
+          added++;
+        }
+      });
+      saveState();
+      renderAll();
+      showToast(added > 0 ? `${added} vaga(s) sugerida(s) adicionada(s) sem apagar as suas.` : "Suas vagas já estão preservadas.");
+    }
+
+    function getGistConfig() {
+      try {
+        return JSON.parse(localStorage.getItem(GIST_CONFIG_KEY)) || { token: "", gistId: "", lastSync: "" };
+      } catch {
+        return { token: "", gistId: "", lastSync: "" };
+      }
+    }
+
+    function updateGistIndicator() {
+      const cfg = getGistConfig();
+      const dot = document.getElementById("gist-sync-dot");
+      if (!dot) return;
+      if (cfg.token && cfg.gistId) {
+        dot.className = "w-2 h-2 rounded-full bg-olive-600";
+      } else if (cfg.token) {
+        dot.className = "w-2 h-2 rounded-full bg-terracotta-600";
+      } else {
+        dot.className = "w-2 h-2 rounded-full bg-slate-300";
+      }
+    }
+
+    function openGistModal() {
+      const cfg = getGistConfig();
+      document.getElementById("gist-token").value = cfg.token || "";
+      document.getElementById("gist-id").value = cfg.gistId || "";
+      document.getElementById("gist-last-sync").textContent = cfg.lastSync
+        ? `Última sincronização: ${cfg.lastSync}`
+        : "Última sincronização: Nenhuma realizada ainda.";
+      document.getElementById("gist-modal").classList.remove("hidden");
+      refreshIcons();
+    }
+
+    function closeGistModal() {
+      document.getElementById("gist-modal").classList.add("hidden");
+    }
+
+    function saveGistConfig() {
+      const token = document.getElementById("gist-token").value.trim();
+      const gistId = document.getElementById("gist-id").value.trim();
+      const prev = getGistConfig();
+      localStorage.setItem(GIST_CONFIG_KEY, JSON.stringify({ ...prev, token, gistId }));
+      updateGistIndicator();
+      showToast("Credenciais do GitHub Gist salvas localmente.");
+    }
+
+    async function pushToGist() {
+      const token = document.getElementById("gist-token").value.trim();
+      let gistId = document.getElementById("gist-id").value.trim();
+
+      if (!token) {
+        showToast("Informe seu GitHub Personal Access Token (escopo gist).", "error");
+        return;
+      }
+
+      try {
+        showToast("Enviando dados para o GitHub Gist...");
+        const payload = {
+          description: "CareerOS Backup - Ludmila Silva CRM & ATS",
+          public: false,
+          files: {
+            "careeros_ludmila_data.json": {
+              content: JSON.stringify(appState, null, 2)
+            }
+          }
+        };
+
+        const url = gistId
+          ? `https://api.github.com/gists/${gistId}`
+          : "https://api.github.com/gists";
+        const method = gistId ? "PATCH" : "POST";
+
+        const response = await fetch(url, {
+          method,
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Accept": "application/vnd.github+json",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+        gistId = data.id;
+        document.getElementById("gist-id").value = gistId;
+        const nowStr = new Date().toLocaleString("pt-BR");
+        localStorage.setItem(GIST_CONFIG_KEY, JSON.stringify({ token, gistId, lastSync: nowStr }));
+        document.getElementById("gist-last-sync").textContent = `Última sincronização: ${nowStr} (Push concluído)`;
+        updateGistIndicator();
+        showToast("Sincronizado com sucesso na nuvem.");
+      } catch (err) {
+        showToast("Falha ao enviar para o Gist. Verifique o Token e o Gist ID.", "error");
+      }
+    }
+
+    async function pullFromGist() {
+      const token = document.getElementById("gist-token").value.trim();
+      const gistId = document.getElementById("gist-id").value.trim();
+
+      if (!token || !gistId) {
+        showToast("Informe o Token e o Gist ID para baixar da nuvem.", "error");
+        return;
+      }
+
+      try {
+        showToast("Baixando dados do GitHub Gist...");
+        const response = await fetch(`https://api.github.com/gists/${gistId}`, {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Accept": "application/vnd.github+json"
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+        const fileObj = data.files && data.files["careeros_ludmila_data.json"];
+        if (!fileObj || !fileObj.content) {
+          throw new Error("Arquivo não encontrado no Gist");
+        }
+
+        const remoteState = JSON.parse(fileObj.content);
+        if (remoteState && Array.isArray(remoteState.jobs)) {
+          appState = remoteState;
+          saveState();
+          renderAll();
+          const nowStr = new Date().toLocaleString("pt-BR");
+          localStorage.setItem(GIST_CONFIG_KEY, JSON.stringify({ token, gistId, lastSync: nowStr }));
+          document.getElementById("gist-last-sync").textContent = `Última sincronização: ${nowStr} (Pull concluído)`;
+          updateGistIndicator();
+          showToast("Dados restaurados da nuvem com sucesso.");
+        }
+      } catch (err) {
+        showToast("Erro ao baixar do GitHub Gist. Verifique as credenciais.", "error");
+      }
+    }
+
+    // =========================================================================
+    // 6. EXPORTAÇÃO / IMPORTAÇÃO JSON & CSV
+    // =========================================================================
+    function toggleBackupMenu() {
+      document.getElementById("backup-dropdown").classList.toggle("hidden");
+    }
+
+    function exportJSON() {
+      const blob = new Blob([JSON.stringify(appState, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `CareerOS_Ludmila_Silva_${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast("Backup JSON exportado.");
+    }
+
+    function importJSON(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (imported && Array.isArray(imported.jobs)) {
+            appState = imported;
+            saveState();
+            renderAll();
+            showToast(`${imported.jobs.length} vagas importadas.`);
+          } else {
+            showToast("Formato JSON inválido.", "error");
+          }
+        } catch {
+          showToast("Erro ao ler o arquivo JSON.", "error");
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = "";
+    }
+
+    function exportCSV() {
+      const headers = [
+        "Empresa",
+        "Cargo",
+        "Etapa",
+        "Plataforma",
+        "Modelo",
+        "Publicada Em",
+        "Verificada Em",
+        "Fit Geral (%)",
+        "Match Gupy (pts)",
+        "Contatos Ativos",
+        "Link",
+        "Motivo Descarte"
+      ];
+
+      const rows = appState.jobs.map(job => {
+        const evalData = evaluateJobScores(job);
+        const activeContacts = (job.personas || []).filter(p => p.status !== "Não contatado").length;
+        return [
+          job.company,
+          job.title,
+          job.stage,
+          job.platform,
+          job.model,
+          job.publishedAt || "",
+          job.verifiedAt || "",
+          evalData.fitScore,
+          evalData.gupyTotal,
+          activeContacts,
+          job.url,
+          job.discardReason || ""
+        ].map(val => `"${String(val || "").replace(/"/g, '""')}"`).join(",");
+      });
+
+      const csvContent = "\uFEFF" + [headers.join(","), ...rows].join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `CareerOS_Vagas_Ludmila_${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast("Planilha CSV exportada.");
+    }
+
+    // =========================================================================
+    // 7. RADAR & ATUALIZADOR RÁPIDO DE VAGAS
+    // =========================================================================
+    function toggleRadarDrawer() {
+      document.getElementById("radar-updater-panel").classList.toggle("hidden");
+    }
+
+    function formatNowTimestamp() {
+      const now = new Date();
+      const dd = String(now.getDate()).padStart(2, "0");
+      const mm = String(now.getMonth() + 1).padStart(2, "0");
+      const yyyy = now.getFullYear();
+      const hh = String(now.getHours()).padStart(2, "0");
+      const min = String(now.getMinutes()).padStart(2, "0");
+      return `${dd}/${mm}/${yyyy} às ${hh}:${min}`;
+    }
+
+    function handleQuickRadarImport(event) {
+      event.preventDefault();
+      const company = document.getElementById("qr-company").value.trim();
+      const title = document.getElementById("qr-title").value.trim();
+      const platform = document.getElementById("qr-platform").value;
+      const model = document.getElementById("qr-model").value;
+      const url = document.getElementById("qr-url").value.trim() || "https://portal.gupy.io/";
+      const description = document.getElementById("qr-description").value.trim();
+
+      if (isTalentPoolJob(title, description)) {
+        showToast("Bloqueado: Vagas de Banco de Talentos / Talent Pool são desconsideradas.", "error");
+        return;
+      }
+
+      const policyCheck = evaluateWorkModelPolicy({ model, location: model, description });
+      if (policyCheck.tier === "outside") {
+        showToast("Atenção: Modelo marcado como fora do critério (SP >2x/15d ou presencial fora do RJ).", "error");
+      }
+
+      const stamp = formatNowTimestamp();
+
+      const newJob = {
+        id: "job-" + Date.now(),
+        company,
+        title,
+        platform,
+        model,
+        location: model,
+        publishedAt: stamp.split(" às ")[0],
+        verifiedAt: stamp,
+        stage: "Mapeada",
+        url,
+        discardReason: "",
+        updatedAt: new Date().toISOString(),
+        notes: `- Importada pelo Radar em ${stamp}.`,
+        description,
+        personas: createDefaultPersonas()
+      };
+
+      appState.jobs.unshift(newJob);
+      saveState();
+      renderAll();
+      event.target.reset();
+      showToast(`Vaga "${title}" analisada e adicionada.`);
+    }
+
+    function openNewJobModal() {
+      document.getElementById("new-job-form").reset();
+      document.getElementById("new-job-modal").classList.remove("hidden");
+      refreshIcons();
+    }
+
+    function closeNewJobModal() {
+      document.getElementById("new-job-modal").classList.add("hidden");
+    }
+
+    function handleCreateJob(event) {
+      event.preventDefault();
+      const company = document.getElementById("nj-company").value.trim();
+      const title = document.getElementById("nj-title").value.trim();
+      const platform = document.getElementById("nj-platform").value;
+      const model = document.getElementById("nj-model").value;
+      const stage = document.getElementById("nj-stage").value;
+      const url = document.getElementById("nj-url").value.trim() || "https://portal.gupy.io/";
+      const location = document.getElementById("nj-location").value.trim() || model;
+      const description = document.getElementById("nj-description").value.trim();
+
+      if (isTalentPoolJob(title, description)) {
+        showToast("Bloqueado: Vagas de Banco de Talentos / Talent Pool são desconsideradas.", "error");
+        return;
+      }
+
+      const stamp = formatNowTimestamp();
+
+      const newJob = {
+        id: "job-" + Date.now(),
+        company,
+        title,
+        platform,
+        model,
+        location,
+        publishedAt: stamp.split(" às ")[0],
+        verifiedAt: stamp,
+        stage,
+        url,
+        discardReason: "",
+        updatedAt: new Date().toISOString(),
+        notes: "",
+        description,
+        personas: createDefaultPersonas()
+      };
+
+      appState.jobs.unshift(newJob);
+      saveState();
+      closeNewJobModal();
+      renderAll();
+      showToast(`Vaga "${title}" mapeada com sucesso.`);
+    }
+
+    function markJobVerifiedToday() {
+      const job = appState.jobs.find(j => j.id === currentEditingJobId);
+      if (!job) return;
+      const stamp = formatNowTimestamp();
+      job.verifiedAt = stamp;
+      job.updatedAt = new Date().toISOString();
+      saveState();
+      renderAll();
+      renderJobDetailModal(job.id);
+      showToast(`Vaga marcada como verificada em ${stamp}.`);
+    }
+
+    function markJobExpiredAndDiscard() {
+      const job = appState.jobs.find(j => j.id === currentEditingJobId);
+      if (!job) return;
+      const stamp = formatNowTimestamp();
+      job.stage = "Descartada / Declinada";
+      job.discardReason = `Vaga expirada / encerrada no portal (verificada em ${stamp}).`;
+      job.verifiedAt = stamp;
+      job.updatedAt = new Date().toISOString();
+      saveState();
+      renderAll();
+      renderJobDetailModal(job.id);
+      showToast("Vaga expirada movida para Descartada / Declinada.");
+    }
+
+    // =========================================================================
+    // 8. NAVEGAÇÃO GLOBAL, KPIS & CONTROLES
+    // =========================================================================
+    function setGlobalEngine(engine) {
+      appState.engine = engine;
+      saveState();
+
+      const btnFit = document.getElementById("btn-engine-fit");
+      const btnGupy = document.getElementById("btn-engine-gupy");
+
+      if (engine === "fit") {
+        btnFit.className = "px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 bg-slate-900 text-white shadow-2xs";
+        btnGupy.className = "px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 text-slate-600 hover:text-slate-900";
+      } else {
+        btnGupy.className = "px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 bg-terracotta-600 text-white shadow-2xs";
+        btnFit.className = "px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 text-slate-600 hover:text-slate-900";
+      }
+
+      renderAll();
+    }
+
+    function toggleEducationStatus() {
+      appState.educationStatus = appState.educationStatus === "Concluído" ? "Cursando" : "Concluído";
+      saveState();
+      updateEducationButtonUI();
+      renderAll();
+      if (currentEditingJobId) {
+        renderJobDetailModal(currentEditingJobId);
+      }
+      showToast(`Status da formação: ${appState.educationStatus} (${appState.educationStatus === "Concluído" ? "20/20" : "12/20"} pts Gaia)`);
+    }
+
+    function updateEducationButtonUI() {
+      const btn = document.getElementById("btn-edu-status");
+      const label = document.getElementById("edu-status-label");
+      if (appState.educationStatus === "Concluído") {
+        btn.className = "px-3 py-2 rounded-xl text-xs font-medium bg-olive-50 text-olive-800 border border-olive-200 hover:bg-olive-100/70 transition-colors flex items-center gap-1.5";
+        label.textContent = "Concluído (20/20 pts)";
+      } else {
+        btn.className = "px-3 py-2 rounded-xl text-xs font-medium bg-terracotta-50 text-terracotta-800 border border-terracotta-200 hover:bg-terracotta-100/70 transition-colors flex items-center gap-1.5";
+        label.textContent = "Cursando (12/20 pts)";
+      }
+    }
+
+    function switchMainTab(tabName) {
+      ["kanban", "table", "radar"].forEach(t => {
+        document.getElementById(`view-${t}`).classList.toggle("hidden", t !== tabName);
+        const btn = document.getElementById(`tab-btn-${t}`);
+        if (t === tabName) {
+          btn.className = "px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-terracotta-600 text-white transition-colors flex items-center gap-1.5 whitespace-nowrap";
+        } else {
+          btn.className = "px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-100 transition-colors flex items-center gap-1.5 whitespace-nowrap";
+        }
+      });
+      renderAll();
+    }
+
+    function getFilteredJobs() {
+      const search = normalizeText(document.getElementById("global-search").value);
+      const platform = document.getElementById("platform-filter").value;
+      const modelFilter = document.getElementById("model-filter").value;
+
+      return appState.jobs.filter(job => {
+        const matchesPlatform = platform === "all" || job.platform === platform;
+        const policy = evaluateWorkModelPolicy(job);
+        const matchesModel = modelFilter === "all" || policy.tier === modelFilter;
+        const hay = normalizeText(`${job.company} ${job.title} ${job.description} ${job.location} ${job.model}`);
+        const matchesSearch = !search || hay.includes(search);
+        return matchesPlatform && matchesModel && matchesSearch;
+      });
+    }
+
+    // =========================================================================
+    // 9. RENDERIZAÇÃO DOS KPIs, KANBAN (7 ETAPAS + DRAG-AND-DROP), TABELA E RADAR
+    // =========================================================================
+    function renderAll() {
+      updateEducationButtonUI();
+      renderKPIs();
+      renderKanban();
+      renderTable();
+      renderRadarFeedback();
+      refreshIcons();
+    }
+
+    function renderKPIs() {
+      const jobs = appState.jobs;
+      const discarded = jobs.filter(j => j.stage === "Descartada / Declinada").length;
+      const active = jobs.filter(j => !["Mapeada", "Descartada / Declinada"].includes(j.stage)).length;
+
+      let totalScore = 0;
+      let activeContacts = 0;
+
+      jobs.forEach(job => {
+        const scores = evaluateJobScores(job);
+        totalScore += appState.engine === "gupy" ? scores.gupyTotal : scores.fitScore;
+        activeContacts += (job.personas || []).filter(p => p.status !== "Não contatado").length;
+      });
+
+      const avgScore = jobs.length > 0 ? Math.round(totalScore / jobs.length) : 0;
+
+      document.getElementById("kpi-total").textContent = jobs.length;
+      document.getElementById("kpi-active").textContent = active;
+      document.getElementById("kpi-score-label").textContent = appState.engine === "gupy" ? "Média Match Gupy" : "Média Fit Geral";
+      document.getElementById("kpi-score-value").textContent = appState.engine === "gupy" ? `${avgScore}/100` : `${avgScore}%`;
+      document.getElementById("kpi-networking").textContent = activeContacts;
+      document.getElementById("kpi-discarded").textContent = discarded;
+    }
+
+    function renderKanban() {
+      const board = document.getElementById("kanban-board");
+      if (!board) return;
+      const filteredJobs = getFilteredJobs();
+
+      board.innerHTML = KANBAN_STAGES.map(stage => {
+        const stageJobs = filteredJobs
+          .filter(j => j.stage === stage.id)
+          .sort((a, b) => {
+            const evalA = evaluateJobScores(a);
+            const evalB = evaluateJobScores(b);
+            if (evalB.modelPolicy.rank !== evalA.modelPolicy.rank) {
+              return evalB.modelPolicy.rank - evalA.modelPolicy.rank;
+            }
+            const scoreA = appState.engine === "gupy" ? evalA.gupyTotal : evalA.fitScore;
+            const scoreB = appState.engine === "gupy" ? evalB.gupyTotal : evalB.fitScore;
+            return scoreB - scoreA;
+          });
+
+        return `
+          <div
+            class="kanban-column w-[285px] shrink-0 bg-slate-100/80 border border-slate-200/90 rounded-2xl p-2.5 flex flex-col max-h-[calc(100vh-290px)]"
+            ondragover="handleDragOver(event)"
+            ondragleave="handleDragLeave(event)"
+            ondrop="handleDrop(event, '${stage.id}')"
+          >
+            <div class="flex items-center justify-between px-1.5 py-1.5 mb-2">
+              <h3 class="text-xs font-bold text-slate-800 truncate">${escapeHtml(stage.label)}</h3>
+              <span class="px-2 py-0.5 rounded-full text-[11px] font-bold font-mono bg-white text-slate-700 border border-slate-200">${stageJobs.length}</span>
+            </div>
+
+            <div class="space-y-2.5 overflow-y-auto pr-0.5 flex-1 min-h-[120px]">
+              ${stageJobs.length === 0 ? `
+                <div class="border border-dashed border-slate-300/80 rounded-xl p-4 text-center text-[11px] text-slate-400">
+                  Arraste uma vaga para esta etapa
+                </div>
+              ` : stageJobs.map(job => {
+                const evalData = evaluateJobScores(job);
+                const mainScore = appState.engine === "gupy" ? `${evalData.gupyTotal} pts` : `${evalData.fitScore}%`;
+                const activeContacts = (job.personas || []).filter(p => p.status !== "Não contatado").length;
+
+                return `
+                  <div
+                    draggable="true"
+                    ondragstart="handleDragStart(event, '${job.id}')"
+                    ondragend="handleDragEnd(event)"
+                    onclick="openJobDetailModal('${job.id}')"
+                    class="kanban-card bg-white p-3.5 rounded-xl border border-slate-200 hover:border-terracotta-500 shadow-[0_1px_2px_rgba(15,23,42,0.03)] cursor-pointer space-y-2.5"
+                  >
+                    <div class="flex items-center justify-between gap-1.5">
+                      <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-slate-900 text-white">${escapeHtml(job.platform)}</span>
+                      <span class="px-2 py-0.5 rounded-md text-[11px] font-bold font-mono bg-terracotta-50 text-terracotta-800 border border-terracotta-200">${mainScore}</span>
+                    </div>
+
+                    <div>
+                      <p class="text-[11px] font-bold text-terracotta-600 uppercase tracking-wide truncate">${escapeHtml(job.company)}</p>
+                      <h4 class="text-xs font-bold text-slate-900 leading-snug mt-0.5 line-clamp-2">${escapeHtml(job.title)}</h4>
+                    </div>
+
+                    <div class="flex flex-wrap gap-1">
+                      <span class="px-2 py-0.5 rounded-md text-[10px] font-medium border ${evalData.modelPolicy.badgeClass}">
+                        ${escapeHtml(evalData.modelPolicy.badgeLabel)}
+                      </span>
+                    </div>
+
+                    <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-500 font-mono">
+                      <span>${activeContacts}/4 contatos</span>
+                      <span>${escapeHtml((job.verifiedAt || "").split(" ")[0] || "Ativa")}</span>
+                    </div>
+                  </div>
+                `;
+              }).join("")}
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function handleDragStart(event, jobId) {
+      draggedJobId = jobId;
+      event.currentTarget.classList.add("dragging");
+      if (event.dataTransfer) {
+        event.dataTransfer.effectAllowed = "move";
+        event.dataTransfer.setData("text/plain", jobId);
+      }
+    }
+
+    function handleDragEnd(event) {
+      event.currentTarget.classList.remove("dragging");
+      document.querySelectorAll(".kanban-column").forEach(col => col.classList.remove("drag-over"));
+    }
+
+    function handleDragOver(event) {
+      event.preventDefault();
+      event.currentTarget.classList.add("drag-over");
+    }
+
+    function handleDragLeave(event) {
+      event.currentTarget.classList.remove("drag-over");
+    }
+
+    function handleDrop(event, targetStage) {
+      event.preventDefault();
+      event.currentTarget.classList.remove("drag-over");
+      const id = draggedJobId || (event.dataTransfer && event.dataTransfer.getData("text/plain"));
+      if (!id) return;
+
+      const job = appState.jobs.find(j => j.id === id);
+      if (job && job.stage !== targetStage) {
+        job.stage = targetStage;
+        job.updatedAt = new Date().toISOString();
+        saveState();
+        renderAll();
+        showToast(`"${job.title}" movida para ${targetStage}.`);
+      }
+      draggedJobId = null;
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById("table-body");
+      if (!tbody) return;
+
+      const sortBy = document.getElementById("table-sort").value;
+      const jobs = [...getFilteredJobs()].sort((a, b) => {
+        const evalA = evaluateJobScores(a);
+        const evalB = evaluateJobScores(b);
+        if (sortBy === "gupyScore") return evalB.gupyTotal - evalA.gupyTotal;
+        if (sortBy === "fitScore") return evalB.fitScore - evalA.fitScore;
+        if (sortBy === "updatedAt") return new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0);
+        const activeA = appState.engine === "gupy" ? evalA.gupyTotal : evalA.fitScore;
+        const activeB = appState.engine === "gupy" ? evalB.gupyTotal : evalB.fitScore;
+        return activeB - activeA;
+      });
+
+      if (jobs.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="py-8 text-center text-slate-400">Nenhuma vaga encontrada com os filtros atuais.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = jobs.map(job => {
+        const evalData = evaluateJobScores(job);
+        const activeContacts = (job.personas || []).filter(p => p.status !== "Não contatado").length;
+        const hasReferral = (job.personas || []).some(p => p.status === "Indicação confirmada");
+
+        return `
+          <tr class="hover:bg-slate-50/90 transition-colors">
+            <td class="py-3 px-4">
+              <p class="font-bold text-slate-900">${escapeHtml(job.title)}</p>
+              <p class="text-[11px] font-semibold text-terracotta-600">${escapeHtml(job.company)}</p>
+            </td>
+            <td class="py-3 px-3">
+              <span class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-slate-100 text-slate-800">${escapeHtml(job.stage)}</span>
+            </td>
+            <td class="py-3 px-3">
+              <div class="flex flex-col gap-1 items-start">
+                <span class="text-[11px] font-semibold text-slate-700">${escapeHtml(job.platform)}</span>
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-medium border ${evalData.modelPolicy.badgeClass}">${escapeHtml(evalData.modelPolicy.badgeLabel)}</span>
+              </div>
+            </td>
+            <td class="py-3 px-3 font-mono text-[11px] text-slate-500">${escapeHtml(job.verifiedAt || job.publishedAt || "-")}</td>
+            <td class="py-3 px-3 font-mono font-bold text-olive-700">${evalData.fitScore}%</td>
+            <td class="py-3 px-3 font-mono font-bold text-terracotta-700">${evalData.gupyTotal}/100</td>
+            <td class="py-3 px-3">
+              <span class="text-[11px] font-medium ${hasReferral ? 'text-olive-700 font-bold' : 'text-slate-600'}">
+                ${activeContacts}/4 ${hasReferral ? "(Indicação)" : ""}
+              </span>
+            </td>
+            <td class="py-3 px-4 text-right">
+              <button onclick="openJobDetailModal('${job.id}')" class="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-terracotta-600 text-white text-[11px] font-semibold transition-colors">
+                Calibrar & Abrir
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function renderRadarFeedback() {
+      const pillarsContainer = document.getElementById("radar-gaia-pillars");
+      const keywordsContainer = document.getElementById("radar-keywords-list");
+      const discardContainer = document.getElementById("radar-discard-list");
+      if (!pillarsContainer || !keywordsContainer || !discardContainer) return;
+
+      const jobs = appState.jobs;
+      if (jobs.length === 0) {
+        pillarsContainer.innerHTML = `<p class="text-xs text-slate-400">Cadastre vagas para visualizar o diagnóstico.</p>`;
+        return;
+      }
+
+      const sums = { exp: 0, edu: 0, skills: 0, loc: 0, net: 0 };
+      const termStats = {};
+
+      jobs.forEach(job => {
+        const ev = evaluateJobScores(job);
+        sums.exp += ev.gaiaBreakdown.exp.score;
+        sums.edu += ev.gaiaBreakdown.edu.score;
+        sums.skills += ev.gaiaBreakdown.skills.score;
+        sums.loc += ev.gaiaBreakdown.loc.score;
+        sums.net += ev.gaiaBreakdown.net.score;
+
+        ev.matchedTerms.forEach(t => {
+          if (!termStats[t]) termStats[t] = { count: 0, inProfile: true };
+          termStats[t].count++;
+        });
+        ev.missingTerms.forEach(t => {
+          if (!termStats[t]) termStats[t] = { count: 0, inProfile: false };
+          termStats[t].count++;
+        });
+      });
+
+      const n = jobs.length;
+      const avgPillars = [
+        { label: "Experiência & PLN Semântico", avg: Math.round(sums.exp / n), max: 50 },
+        { label: `Formação (${appState.educationStatus})`, avg: Math.round(sums.edu / n), max: 20 },
+        { label: "Habilidades & Ferramentas", avg: Math.round(sums.skills / n), max: 15 },
+        { label: "Localidade & Modelo", avg: Math.round(sums.loc / n), max: 10 },
+        { label: "Indicação no Mini-CRM", avg: Math.round(sums.net / n), max: 5 }
+      ];
+
+      pillarsContainer.innerHTML = avgPillars.map(p => {
+        const pct = Math.round((p.avg / p.max) * 100);
+        return `
+          <div>
+            <div class="flex justify-between text-xs font-medium text-slate-700 mb-1">
+              <span>${p.label}</span>
+              <span class="font-mono font-bold text-slate-900">${p.avg}/${p.max} pts</span>
+            </div>
+            <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+              <div class="h-full bg-terracotta-600 rounded-full" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      const sortedTerms = Object.entries(termStats).sort((a, b) => b[1].count - a[1].count);
+      keywordsContainer.innerHTML = sortedTerms.length > 0
+        ? sortedTerms.map(([term, info]) => `
+            <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-slate-200/80 text-xs">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full ${info.inProfile ? 'bg-olive-600' : 'bg-terracotta-600'}"></span>
+                <span class="font-medium text-slate-800">${escapeHtml(term)}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-[11px] font-mono text-slate-500">${info.count} vaga(s)</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-semibold ${info.inProfile ? 'bg-olive-50 text-olive-800 border border-olive-200' : 'bg-terracotta-50 text-terracotta-800 border border-terracotta-200'}">
+                  ${info.inProfile ? "No PDF" : "Lacuna"}
+                </span>
+              </div>
+            </div>
+          `).join("")
+        : `<p class="text-xs text-slate-400">Nenhuma palavra-chave mapeada ainda.</p>`;
+
+      const discardedJobs = jobs.filter(j => j.stage === "Descartada / Declinada");
+      discardContainer.innerHTML = discardedJobs.length > 0
+        ? discardedJobs.map(j => `
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-1">
+              <div class="flex justify-between font-bold text-slate-800">
+                <span>${escapeHtml(j.company)} — ${escapeHtml(j.title)}</span>
+              </div>
+              <p class="text-slate-600">${escapeHtml(j.discardReason || "Sem motivo detalhado registrado.")}</p>
+            </div>
+          `).join("")
+        : `<div class="p-4 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-xs text-slate-400 text-center">Nenhuma vaga descartada ou declinada até o momento.</div>`;
+    }
+
+    function openJobDetailModal(jobId) {
+      currentEditingJobId = jobId;
+      renderJobDetailModal(jobId);
+      switchDetailTab("details");
+      document.getElementById("job-detail-modal").classList.remove("hidden");
+      refreshIcons();
+    }
+
+    function closeJobDetailModal() {
+      currentEditingJobId = null;
+      document.getElementById("job-detail-modal").classList.add("hidden");
+    }
+
+    function switchDetailTab(tabName) {
+      ["details", "resume", "networking", "journal"].forEach(t => {
+        document.getElementById(`dtab-${t}`).classList.toggle("hidden", t !== tabName);
+        const btn = document.getElementById(`dtab-btn-${t}`);
+        if (t === tabName) {
+          btn.className = "px-3.5 py-2 rounded-t-xl text-xs font-semibold border-b-2 border-terracotta-600 text-terracotta-700 bg-terracotta-50/40 whitespace-nowrap flex items-center gap-1.5";
+        } else {
+          btn.className = "px-3.5 py-2 rounded-t-xl text-xs font-medium border-b-2 border-transparent text-slate-600 hover:text-slate-900 whitespace-nowrap flex items-center gap-1.5";
+        }
+      });
+      refreshIcons();
+    }
+
+    function switchResumeSubTab(subName) {
+      ["gupy", "cv", "cover"].forEach(s => {
+        document.getElementById(`rsub-${s}`).classList.toggle("hidden", s !== subName);
+        const btn = document.getElementById(`rsub-btn-${s}`);
+        if (s === subName) {
+          btn.className = "px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 text-white transition-colors";
+        } else {
+          btn.className = "px-3 py-1.5 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-100 transition-colors";
+        }
+      });
+      refreshIcons();
+    }
+
+    function renderJobDetailModal(jobId) {
+      const job = appState.jobs.find(j => j.id === jobId);
+      if (!job) return;
+
+      const evalData = evaluateJobScores(job);
+
+      document.getElementById("md-platform-badge").textContent = job.platform;
+      document.getElementById("md-title").textContent = job.title;
+      document.getElementById("md-company").textContent = job.company;
+      document.getElementById("md-model-loc").textContent = `${job.model} • ${job.location}`;
+      document.getElementById("md-scores-summary").textContent = `Fit: ${evalData.fitScore}%  •  Gaia: ${evalData.gupyTotal}/100 pts`;
+      document.getElementById("md-verified-stamp").textContent = `Verificada: ${job.verifiedAt || "13/11/2026"}`;
+      document.getElementById("md-published-info").textContent = `Publicada em: ${job.publishedAt || "Nov/2026"} • Última checagem: ${job.verifiedAt || "13/11/2026"}`;
+      document.getElementById("md-external-link").href = job.url || "#";
+      document.getElementById("md-verify-url-btn").href = job.url || "#";
+
+      const stageSelect = document.getElementById("md-stage-select");
+      stageSelect.innerHTML = KANBAN_STAGES.map(st =>
+        `<option value="${st.id}" ${st.id === job.stage ? "selected" : ""}>Etapa: ${st.label}</option>`
+      ).join("");
+
+      document.getElementById("ed-company").value = job.company;
+      document.getElementById("ed-title").value = job.title;
+      document.getElementById("ed-platform").value = job.platform;
+      document.getElementById("ed-model").value = job.model;
+      document.getElementById("ed-location").value = job.location;
+      document.getElementById("ed-url").value = job.url;
+      document.getElementById("ed-discard-reason").value = job.discardReason || "";
+      document.getElementById("ed-description").value = job.description;
+      document.getElementById("ed-notes").value = job.notes || "";
+      // 1. Dados & Calibrador ATS (Raio-X)
+      document.getElementById("ed-gupy-total").textContent = `${evalData.gupyTotal} / 100`;
+      document.getElementById("ed-fit-total").textContent = `${evalData.fitScore}%`;
+
+      const pillars = Object.values(evalData.gaiaBreakdown);
+      document.getElementById("ed-gaia-breakdown").innerHTML = pillars.map(p => {
+        const pct = Math.round((p.score / p.max) * 100);
+        return `
+          <div>
+            <div class="flex justify-between font-medium text-slate-700 mb-1">
+              <span>${p.label}</span>
+              <span class="font-bold font-mono text-slate-900">${p.score}/${p.max} pts</span>
+            </div>
+            <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+              <div class="h-full bg-terracotta-600 rounded-full" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      document.getElementById("ed-matched-keywords").innerHTML = evalData.matchedTerms.length > 0
+        ? evalData.matchedTerms.map(t => `<span class="px-2 py-0.5 rounded-md bg-olive-50 text-olive-800 border border-olive-200 font-medium">${escapeHtml(t)}</span>`).join("")
+        : `<span class="text-slate-400">Nenhuma keyword técnica específica detectada.</span>`;
+
+      document.getElementById("ed-missing-keywords").innerHTML = evalData.missingTerms.length > 0
+        ? evalData.missingTerms.map(t => `<span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200 font-medium">${escapeHtml(t)}</span>`).join("")
+        : `<span class="text-slate-400">Nenhuma lacuna crítica detectada na descrição.</span>`;
+
+      // 2. Motor de Adaptação Semântica Real (Currículo ATS)
+      const tailored = buildTailoredResume(job);
+      document.getElementById("resume-track-override").value = job.manualTrack || "auto";
+      document.getElementById("active-track-badge").textContent = `Foco: ${tailored.track.label}`;
+      document.getElementById("active-sector-badge").textContent = `Setor: ${tailored.sector}`;
+
+      const injectedContainer = document.getElementById("injected-keywords-pills");
+      injectedContainer.innerHTML = tailored.injectedKeywords.length > 0
+        ? tailored.injectedKeywords.map(kw => `<span class="px-2 py-0.5 rounded-md bg-olive-50 text-olive-800 border border-olive-200 text-[11px] font-medium">${escapeHtml(kw)}</span>`).join("")
+        : `<span class="text-[11px] text-slate-400">Repertório geral B2B & SEO</span>`;
+
+      // Atualiza estado visual dos botões Texto Corrido / Bullets
+      const btnProse = document.getElementById("btn-format-prose");
+      const btnBullets = document.getElementById("btn-format-bullets");
+      if (appState.gupyFormatMode === "bullets") {
+        btnBullets.className = "px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-white text-slate-900 shadow-2xs transition-all";
+        btnProse.className = "px-2.5 py-1 rounded-lg text-[11px] font-medium text-slate-600 hover:text-slate-900 transition-all";
+      } else {
+        btnProse.className = "px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-white text-slate-900 shadow-2xs transition-all";
+        btnBullets.className = "px-2.5 py-1 rounded-lg text-[11px] font-medium text-slate-600 hover:text-slate-900 transition-all";
+      }
+
+      // Blocos para Gupy
+      const blocks = generateGupyBlocks(job);
+      document.getElementById("gupy-blocks-container").innerHTML = blocks.map(blk => `
+        <div class="bg-white p-4 rounded-2xl border border-slate-200">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+            <div>
+              <h4 class="text-xs font-bold text-slate-900">${escapeHtml(blk.title)}</h4>
+              <p class="text-[11px] text-slate-400">${escapeHtml(blk.subtitle)}</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] text-slate-400 font-mono">${blk.content.length} chars</span>
+              <button type="button" onclick="copyBlockById('${blk.id}')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 hover:bg-terracotta-600 text-white flex items-center gap-1.5 transition-colors">
+                <i data-lucide="copy" class="w-3.5 h-3.5 stroke-[1.75]"></i> Copiar Bloco
+              </button>
+            </div>
+          </div>
+          <textarea id="${blk.id}" rows="${blk.content.split('\n').length > 3 ? 5 : 3}" class="w-full p-3 text-xs text-slate-800 bg-slate-50 border border-slate-200 rounded-xl leading-relaxed focus:outline-none focus:bg-white">${escapeHtml(blk.content)}</textarea>
+        </div>
+      `).join("");
+
+      // CV Completo Calibrado
+      document.getElementById("full-cv-preview").innerHTML = `
+        <div class="border-b border-slate-200 pb-3">
+          <h4 class="text-base font-bold text-slate-900">${escapeHtml(tailored.header.name)}</h4>
+          <p class="text-xs font-semibold text-terracotta-700">${escapeHtml(tailored.header.title)}</p>
+          <p class="text-[11px] text-slate-500 mt-0.5">${escapeHtml(tailored.header.contact)}</p>
+        </div>
+
+        <div>
+          <h5 class="font-bold uppercase tracking-wider text-[11px] text-slate-500 mb-1">Resumo Profissional</h5>
+          <p class="text-slate-700">${escapeHtml(tailored.summary)}</p>
+        </div>
+
+        <div>
+          <h5 class="font-bold uppercase tracking-wider text-[11px] text-slate-500 mb-2">Experiência Profissional</h5>
+          <div class="space-y-3">
+            ${tailored.experiences.map(exp => `
+              <div>
+                <div class="flex justify-between font-bold text-slate-900">
+                  <span>${escapeHtml(exp.company)} — ${escapeHtml(exp.role)}</span>
+                  <span class="text-slate-500 font-normal font-mono">${escapeHtml(exp.period)}</span>
+                </div>
+                <ul class="list-disc pl-4 mt-1 space-y-1 text-slate-700">
+                  ${exp.bullets.map(b => `<li>${escapeHtml(b)}</li>`).join("")}
+                </ul>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-100">
+          <div>
+            <h5 class="font-bold uppercase tracking-wider text-[11px] text-slate-500 mb-1">Formação Acadêmica</h5>
+            <p class="font-semibold text-slate-800">${escapeHtml(tailored.education)}</p>
+          </div>
+          <div>
+            <h5 class="font-bold uppercase tracking-wider text-[11px] text-slate-500 mb-1">Habilidades Chave</h5>
+            <div class="space-y-1 text-slate-700">
+              ${Object.entries(tailored.skills).map(([cat, items]) => `<p><strong>${escapeHtml(cat)}:</strong> ${escapeHtml(items.join(", "))}</p>`).join("")}
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Carta de Apresentação
+      document.getElementById("cover-letter-text").value = generateCoverLetter(job);
+
+      // 3. Networking & Mini-CRM (4 Personas Estratégicas)
+      const personas = job.personas || createDefaultPersonas();
+      const hasReferral = personas.some(p => p.status === "Indicação confirmada");
+      document.getElementById("net-bonus-badge").textContent = `Networking Gaia: ${hasReferral ? 5 : 0} / 5 pts`;
+
+      document.getElementById("networking-personas-grid").innerHTML = personas.map((p, idx) => {
+        const scripts = generatePersonaScripts(job, p);
+        const linkedinPeopleUrl = `https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(job.company + " " + p.suggestedTitle.split(" OR ")[0])}`;
+        const googleXrayUrl = `https://www.google.com/search?q=${encodeURIComponent(`site:linkedin.com/in/ "${job.company}" (${p.suggestedTitle})`)}`;
+
+        return `
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 flex flex-col justify-between space-y-3 text-xs">
+            <div>
+              <div class="flex items-center justify-between gap-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-terracotta-50 text-terracotta-800 border border-terracotta-200">
+                  ${escapeHtml(p.roleType)}
+                </span>
+                <span class="text-[11px] text-slate-400 font-mono truncate">${escapeHtml(p.suggestedTitle.split(" OR ")[0])}</span>
+              </div>
+
+              <div class="grid grid-cols-2 gap-2 mt-3">
+                <a href="${linkedinPeopleUrl}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-2 rounded-xl bg-slate-900 hover:bg-terracotta-600 text-white font-semibold text-center flex items-center justify-center gap-1.5 transition-colors">
+                  <i data-lucide="users" class="w-3.5 h-3.5 stroke-[1.75]"></i>
+                  <span>Pessoas LinkedIn</span>
+                </a>
+                <a href="${googleXrayUrl}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-2 rounded-xl bg-slate-50 hover:border-terracotta-600 hover:text-terracotta-700 text-slate-800 border border-slate-200 font-semibold text-center flex items-center justify-center gap-1.5 transition-colors">
+                  <i data-lucide="search" class="w-3.5 h-3.5 stroke-[1.75]"></i>
+                  <span>Google X-Ray</span>
+                </a>
+              </div>
+
+              <div class="mt-3 space-y-2">
+                <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="text-[10px] font-bold uppercase text-slate-500">Convite LinkedIn (${scripts.invite.length}/300 chars)</span>
+                    <button type="button" onclick="copyTextToClipboard(${JSON.stringify(scripts.invite)}, 'Convite copiado.')" class="text-[11px] font-semibold text-terracotta-700 hover:underline">Copiar</button>
+                  </div>
+                  <p class="text-slate-700 leading-relaxed">${escapeHtml(scripts.invite)}</p>
+                </div>
+
+                <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="text-[10px] font-bold uppercase text-slate-500">Mensagem Direta / Follow-up</span>
+                    <button type="button" onclick="copyTextToClipboard(${JSON.stringify(scripts.followup)}, 'Mensagem copiada.')" class="text-[11px] font-semibold text-terracotta-700 hover:underline">Copiar</button>
+                  </div>
+                  <p class="text-slate-700 leading-relaxed">${escapeHtml(scripts.followup)}</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-100 space-y-2">
+              <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Mini-CRM deste Contato</p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <input
+                  type="text"
+                  value="${escapeHtml(p.contactName || "")}"
+                  onchange="updatePersonaField(${idx}, 'contactName', this.value)"
+                  placeholder="Nome da pessoa encontrada..."
+                  class="px-2.5 py-1.5 border border-slate-200 rounded-lg bg-slate-50 focus:bg-white focus:outline-none focus:border-terracotta-600"
+                />
+                <select
+                  onchange="updatePersonaField(${idx}, 'status', this.value)"
+                  class="px-2.5 py-1.5 border border-slate-200 rounded-lg font-semibold ${p.status === 'Indicação confirmada' ? 'bg-olive-50 text-olive-800 border-olive-300' : 'bg-white text-slate-700'}"
+                >
+                  ${NETWORKING_STATUSES.map(st => `<option value="${st}" ${st === p.status ? "selected" : ""}>${st}</option>`).join("")}
+                </select>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <input
+                  type="url"
+                  value="${escapeHtml(p.profileUrl || "")}"
+                  onchange="updatePersonaField(${idx}, 'profileUrl', this.value)"
+                  placeholder="URL do LinkedIn do contato"
+                  class="px-2.5 py-1.5 border border-slate-200 rounded-lg bg-slate-50 focus:bg-white focus:outline-none focus:border-terracotta-600"
+                />
+                <input
+                  type="text"
+                  value="${escapeHtml(p.notes || "")}"
+                  onchange="updatePersonaField(${idx}, 'notes', this.value)"
+                  placeholder="Nota rápida / data..."
+                  class="px-2.5 py-1.5 border border-slate-200 rounded-lg bg-slate-50 focus:bg-white focus:outline-none focus:border-terracotta-600"
+                />
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      refreshIcons();
+    }
+
+    // =========================================================================
+    // 11. AÇÕES DENTRO DO MODAL DA VAGA & IMPRESSÃO PDF ATS
+    // =========================================================================
+    function updateResumeTrackOverride(trackValue) {
+      const job = appState.jobs.find(j => j.id === currentEditingJobId);
+      if (!job) return;
+      job.manualTrack = trackValue === "auto" ? "" : trackValue;
+      job.updatedAt = new Date().toISOString();
+      saveState();
+      renderJobDetailModal(job.id);
+      showToast("Trilha de calibragem do currículo atualizada.");
+    }
+
+    function setGupyFormatMode(mode) {
+      appState.gupyFormatMode = mode;
+      saveState();
+      if (currentEditingJobId) {
+        renderJobDetailModal(currentEditingJobId);
+      }
+    }
+
+    function updateCurrentJobStage(newStage) {
+      const job = appState.jobs.find(j => j.id === currentEditingJobId);
+      if (!job) return;
+      job.stage = newStage;
+      job.updatedAt = new Date().toISOString();
+      saveState();
+      renderAll();
+      showToast(`Etapa atualizada para: ${newStage}`);
+    }
+
+    function saveJobEdits() {
+      const job = appState.jobs.find(j => j.id === currentEditingJobId);
+      if (!job) return;
+
+      const updatedTitle = document.getElementById("ed-title").value.trim() || job.title;
+      const updatedDesc = document.getElementById("ed-description").value.trim();
+
+      if (isTalentPoolJob(updatedTitle, updatedDesc)) {
+        showToast("Bloqueado: Vagas de Banco de Talentos são desconsideradas.", "error");
+        return;
+      }
+
+      job.company = document.getElementById("ed-company").value.trim() || job.company;
+      job.title = updatedTitle;
+      job.platform = document.getElementById("ed-platform").value;
+      job.model = document.getElementById("ed-model").value;
+      job.location = document.getElementById("ed-location").value.trim();
+      job.url = document.getElementById("ed-url").value.trim();
+      job.discardReason = document.getElementById("ed-discard-reason").value.trim();
+      job.description = updatedDesc;
+      job.verifiedAt = formatNowTimestamp();
+      job.updatedAt = new Date().toISOString();
+
+      saveState();
+      renderAll();
+      renderJobDetailModal(job.id);
+      showToast("Vaga atualizada e motores recalculados.");
+    }
+
+    function saveJobNotes() {
+      const job = appState.jobs.find(j => j.id === currentEditingJobId);
+      if (!job) return;
+      job.notes = document.getElementById("ed-notes").value;
+      job.updatedAt = new Date().toISOString();
+      saveState();
+      showToast("Anotações salvas.");
+    }
+
+    function updatePersonaField(personaIndex, field, value) {
+      const job = appState.jobs.find(j => j.id === currentEditingJobId);
+      if (!job || !job.personas[personaIndex]) return;
+      job.personas[personaIndex][field] = value;
+      if (field === "status" && value !== "Não contatado") {
+        job.personas[personaIndex].lastContact = new Date().toISOString().slice(0, 10);
+      }
+      job.updatedAt = new Date().toISOString();
+      saveState();
+      renderAll();
+      renderJobDetailModal(job.id);
+      if (field === "status") {
+        showToast(`Status atualizado: ${value}`);
+      }
+    }
+
+    function deleteCurrentJob() {
+      const job = appState.jobs.find(j => j.id === currentEditingJobId);
+      if (!job) return;
+      appState.jobs = appState.jobs.filter(j => j.id !== currentEditingJobId);
+      saveState();
+      closeJobDetailModal();
+      renderAll();
+      showToast(`Vaga "${job.title}" removida.`);
+    }
+
+    function copyBlockById(elementId) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      copyTextToClipboard(el.value, "Bloco Gupy copiado.");
+    }
+
+    function copyFullATSResume() {
+      const job = appState.jobs.find(j => j.id === currentEditingJobId);
+      if (!job) return;
+      const cv = buildTailoredResume(job);
+      const plainText = [
+        cv.header.name.toUpperCase(),
+        cv.header.title,
+        cv.header.contact,
+        "",
+        "RESUMO PROFISSIONAL",
+        cv.summary,
+        "",
+        "EXPERIÊNCIA PROFISSIONAL",
+        ...cv.experiences.map(e => `${e.company} (${e.period}) - ${e.role}\n` + e.bullets.map(b => `• ${b}`).join("\n")),
+        "",
+        "FORMAÇÃO ACADÊMICA",
+        cv.education,
+        "",
+        "HABILIDADES CHAVE",
+        ...Object.entries(cv.skills).map(([k, v]) => `${k}: ${v.join(", ")}`)
+      ].join("\n");
+
+      copyTextToClipboard(plainText, "Currículo ATS completo copiado.");
+    }
+
+    function copyCoverLetter() {
+      const text = document.getElementById("cover-letter-text").value;
+      copyTextToClipboard(text, "Carta de apresentação copiada.");
+    }
+
+    function exportCleanATSPDF() {
+      const job = appState.jobs.find(j => j.id === currentEditingJobId);
+      if (!job) return;
+      const cv = buildTailoredResume(job);
+      const container = document.getElementById("ats-print-container");
+
+      container.innerHTML = `
+        <div style="font-family: Arial, Helvetica, sans-serif; color: #111; line-height: 1.45; max-width: 780px; margin: 0 auto;">
+          <div style="border-bottom: 1.5px solid #222; padding-bottom: 8px; margin-bottom: 12px;">
+            <h1 style="font-size: 20px; font-weight: 700; margin: 0; text-transform: uppercase;">${escapeHtml(cv.header.name)}</h1>
+            <p style="font-size: 13px; font-weight: 600; margin: 2px 0 4px 0; color: #333;">${escapeHtml(cv.header.title)}</p>
+            <p style="font-size: 11px; margin: 0; color: #444;">${escapeHtml(cv.header.contact)}</p>
+          </div>
+
+          <div style="margin-bottom: 12px;">
+            <h2 style="font-size: 12px; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid #ccc; padding-bottom: 2px; margin-bottom: 6px;">Resumo Profissional</h2>
+            <p style="font-size: 11.5px; margin: 0;">${escapeHtml(cv.summary)}</p>
+          </div>
+
+          <div style="margin-bottom: 12px;">
+            <h2 style="font-size: 12px; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid #ccc; padding-bottom: 2px; margin-bottom: 8px;">Experiência Profissional</h2>
+            ${cv.experiences.map(exp => `
+              <div style="margin-bottom: 10px;">
+                <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 700;">
+                  <span>${escapeHtml(exp.company)} — ${escapeHtml(exp.role)}</span>
+                  <span>${escapeHtml(exp.period)}</span>
+                </div>
+                <ul style="margin: 4px 0 0 16px; padding: 0; font-size: 11px;">
+                  ${exp.bullets.map(b => `<li style="margin-bottom: 2px;">${escapeHtml(b)}</li>`).join("")}
+                </ul>
+              </div>
+            `).join("")}
+          </div>
+
+          <div style="margin-bottom: 12px;">
+            <h2 style="font-size: 12px; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid #ccc; padding-bottom: 2px; margin-bottom: 4px;">Formação Acadêmica</h2>
+            <p style="font-size: 11.5px; margin: 0;">${escapeHtml(cv.education)}</p>
+          </div>
+
+          <div>
+            <h2 style="font-size: 12px; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid #ccc; padding-bottom: 2px; margin-bottom: 4px;">Habilidades Chave</h2>
+            ${Object.entries(cv.skills).map(([cat, items]) => `
+              <p style="font-size: 11px; margin: 0 0 3px 0;"><strong>${escapeHtml(cat)}:</strong> ${escapeHtml(items.join(", "))}</p>
+            `).join("")}
+          </div>
+        </div>
+      `;
+
+      container.classList.remove("hidden");
+      window.print();
+      setTimeout(() => {
+        container.classList.add("hidden");
+      }, 500);
+    }
+
+    // =========================================================================
+    // 12. UTILITÁRIOS (CLIPBOARD IFRAME-SAFE, LUCIDE & TOASTS SEM EMOJIS)
+    // =========================================================================
+    function refreshIcons() {
+      if (window.lucide && typeof window.lucide.createIcons === "function") {
+        window.lucide.createIcons();
+      }
+    }
+
+    function copyTextToClipboard(text, successMessage = "Copiado.") {
+      if (!text) return;
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand("copy");
+        showToast(successMessage);
+      } catch (err) {
+        showToast("Não foi possível copiar automaticamente.", "error");
+      }
+      document.body.removeChild(textarea);
+    }
+
+    function showToast(message, type = "success") {
+      const container = document.getElementById("toast-container");
+      const toast = document.createElement("div");
+      const bgClass = type === "error"
+        ? "bg-rose-800 text-white"
+        : "bg-slate-900 text-white border border-slate-700";
+
+      toast.className = `${bgClass} px-4 py-2.5 rounded-xl shadow-lg text-xs font-medium flex items-center gap-2 transition-all duration-200 opacity-0 translate-y-2`;
+      toast.innerHTML = `<span class="w-1.5 h-1.5 rounded-full ${type === "error" ? "bg-rose-300" : "bg-terracotta-500"}"></span><span>${escapeHtml(message)}</span>`;
+      container.appendChild(toast);
+
+      requestAnimationFrame(() => {
+        toast.classList.remove("opacity-0", "translate-y-2");
+      });
+
+      setTimeout(() => {
+        toast.classList.add("opacity-0", "translate-y-2");
+        setTimeout(() => toast.remove(), 220);
+      }, 2600);
+    }
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    document.addEventListener("click", (e) => {
+      const dropdown = document.getElementById("backup-dropdown");
+      if (dropdown && !dropdown.classList.contains("hidden") && !e.target.closest("#backup-dropdown") && !e.target.closest("button[onclick='toggleBackupMenu()']")) {
+        dropdown.classList.add("hidden");
+      }
+    });
+
+    window.addEventListener("DOMContentLoaded", () => {
+      loadState();
+      setGlobalEngine(appState.engine);
+      refreshIcons();
+    });
+  </script>
+</body>
+</html>
